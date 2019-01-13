@@ -36,5 +36,6 @@
   <modules>
     <module>./template/client</module>
     <module>./keyvault/data-plane</module>
+    <module>./batch/data-plane</module>
   </modules>
 </project>

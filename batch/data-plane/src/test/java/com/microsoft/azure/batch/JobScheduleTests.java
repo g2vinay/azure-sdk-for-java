@@ -9,10 +9,7 @@ package com.microsoft.azure.batch;
 import com.microsoft.azure.batch.protocol.models.*;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -23,6 +20,8 @@ public class JobScheduleTests extends BatchTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
+        String testMode = getTestMode();
+        Assume.assumeTrue("Tests only run in Record/Live mode", testMode.equals("RECORD"));
         createClient(AuthMode.SharedKey);
         String poolId = getStringWithUserNamePrefix("-testpool");
         livePool = createIfNotExistPaaSPool(poolId);

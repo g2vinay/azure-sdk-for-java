@@ -7,10 +7,7 @@
 package com.microsoft.azure.batch;
 
 import com.microsoft.azure.batch.protocol.models.*;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.apache.commons.io.IOUtils;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
@@ -27,6 +24,8 @@ public class FileTests extends BatchTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
+        String testMode = getTestMode();
+        Assume.assumeTrue("Tests only run in Record/Live mode", testMode.equals("RECORD"));
         createClient(AuthMode.SharedKey);
         String poolId = getStringWithUserNamePrefix("-testpool");
         livePool = createIfNotExistPaaSPool(poolId);

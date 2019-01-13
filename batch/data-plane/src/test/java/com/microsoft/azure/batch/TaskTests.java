@@ -12,10 +12,7 @@ import com.microsoft.azure.batch.protocol.models.*;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.*;
 import java.util.*;
@@ -27,6 +24,8 @@ public class TaskTests  extends BatchTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
+        String testMode = getTestMode();
+        Assume.assumeTrue("Tests only run in Record/Live mode", testMode.equals("RECORD"));
         try {
         createClient(AuthMode.SharedKey);
         String poolId = getStringWithUserNamePrefix("-testpool");

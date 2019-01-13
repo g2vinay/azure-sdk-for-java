@@ -277,4 +277,10 @@ abstract class BatchTestBase {
         String s = blockBlobReference.downloadText();
         return s;
     }
+
+    static String getTestMode(){
+        String testMode = System.getenv("AZURE_TEST_MODE");
+        testMode = testMode != null ? testMode : "";
+        return testMode;
+    }
 }

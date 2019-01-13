@@ -17,6 +17,8 @@ public class PoolTests extends BatchTestBase {
 
     @BeforeClass
     public static void setup() throws Exception {
+        String testMode = getTestMode();
+        Assume.assumeTrue("Tests only run in Record/Live mode", testMode.equals("RECORD"));
         createClient(AuthMode.SharedKey);
         String poolId = getStringWithUserNamePrefix("-testpool");
         livePool = createIfNotExistPaaSPool(poolId);
@@ -295,7 +297,9 @@ public class PoolTests extends BatchTestBase {
             }
         }
     }
-    
+
+    //Temporarily disabling this test - REST API is missing the logic for this case.
+    @Ignore
     @Test
     public void shouldFailOnCreateLinuxPoolWithWindowsConfig() throws Exception {
         String poolId = getStringWithUserNamePrefix("-createLinuxPool");
