@@ -13,7 +13,6 @@ import com.microsoft.azure.batch.protocol.models.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -31,6 +30,7 @@ import org.junit.Assert;
  */
 abstract class BatchTestBase {
     static BatchClient batchClient;
+    static int MAX_LEN_ID = 64;
 
     public enum AuthMode {
         AAD, SharedKey
@@ -145,9 +145,21 @@ abstract class BatchTestBase {
         return batchClient.poolOperations().getPool(poolId);
     }
 
-    static String getStringWithUserNamePrefix(String name) {
+    static String getStringIdWithUserNamePrefix(String name) {
         String userName = System.getProperty("user.name");
-        return userName + name;
+        StringBuilder out = new StringBuilder();
+        int remainingSpace = MAX_LEN_ID - name.length();
+        if (remainingSpace > 0){
+            if(userName.length() > remainingSpace){
+                out.append(userName.substring(0,remainingSpace));
+            } else {
+                out.append(userName);
+            }
+            out.append(name);
+        } else {
+            out.append(name.substring(0, MAX_LEN_ID));
+        }
+        return out.toString();
     }
 
     static CloudBlobContainer createBlobContainer(String storageAccountName, String storageAccountKey,

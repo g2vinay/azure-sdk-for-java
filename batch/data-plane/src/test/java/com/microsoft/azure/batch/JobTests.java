@@ -20,7 +20,7 @@ public class JobTests extends BatchTestBase {
         String testMode = getTestMode();
         Assume.assumeTrue("Tests only run in Record/Live mode", testMode.equals("RECORD"));
         createClient(AuthMode.SharedKey);
-        String poolId = getStringWithUserNamePrefix("-testpool");
+        String poolId = getStringIdWithUserNamePrefix("-testpool");
         livePool = createIfNotExistPaaSPool(poolId);
         Assert.assertNotNull(livePool);
     }
@@ -38,7 +38,7 @@ public class JobTests extends BatchTestBase {
     @Test
     public void canCRUDJob() throws Exception {
         // CREATE
-        String jobId = getStringWithUserNamePrefix("-Job-" + (new Date()).toString().replace(' ', '-').replace(':', '-').replace('.', '-'));
+        String jobId = getStringIdWithUserNamePrefix("-Job-" + (new Date()).toString().replace(' ', '-').replace(':', '-').replace('.', '-'));
 
         PoolInformation poolInfo = new PoolInformation();
         poolInfo.withPoolId(livePool.id());
@@ -98,7 +98,7 @@ public class JobTests extends BatchTestBase {
     @Test
     public void canUpdateJobState() throws Exception {
         // CREATE
-        String jobId = getStringWithUserNamePrefix("-Job-" + (new Date()).toString().replace(' ', '-').replace(':', '-').replace('.', '-'));
+        String jobId = getStringIdWithUserNamePrefix("-Job-" + (new Date()).toString().replace(' ', '-').replace(':', '-').replace('.', '-'));
 
         PoolInformation poolInfo = new PoolInformation();
         poolInfo.withPoolId(livePool.id());
