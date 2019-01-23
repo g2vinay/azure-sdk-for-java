@@ -108,6 +108,9 @@
           <propertyExpansion>samedir=runtimes/build-tools/src/main/resources</propertyExpansion>
           <suppressionsLocation>suppressions.xml</suppressionsLocation>
           <consoleOutput>true</consoleOutput>
+
+          <failsOnError>false</failsOnError>
+          <failOnViolation>false</failOnViolation>
         </configuration>
       </plugin>
 
