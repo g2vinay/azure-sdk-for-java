@@ -144,7 +144,7 @@ public class TaskTests  extends BatchTestBase {
                 batchClient.taskOperations().getTask(jobId, taskId);
                 Assert.assertTrue("Shouldn't be here, the job should be deleted", true);
             } catch (BatchErrorException err) {
-                if (!err.body().code().equals(BatchErrorCodeStrings.TaskNotFound)) {
+                if (!err.body().code().equals(BatchErrorCodeStrings.TASK_NOT_FOUND)) {
                     throw err;
                 }
             }
@@ -414,7 +414,7 @@ public class TaskTests  extends BatchTestBase {
             batchClient.taskOperations().createTask(jobId, taskToAdd);
         }
         catch (BatchErrorException err) {
-            if (err.body().code().equals("InvalidPropertyValue")) {
+            if (err.body().code().equals("INVALID_PROPERTY_VALUE")) {
                 // Accepted Error
                 for (int i = 0; i < err.body().values().size(); i++) {
                     if (err.body().values().get(i).key().equals("Reason")) {
@@ -465,7 +465,7 @@ public class TaskTests  extends BatchTestBase {
             } catch (Exception e) {
                 // Ignore here
             }
-            Assert.fail("Expected RequestBodyTooLarge error");
+            Assert.fail("Expected REQUEST_BODY_TOO_LARGE error");
         }
         catch (BatchErrorException err) {
             try {
@@ -473,7 +473,7 @@ public class TaskTests  extends BatchTestBase {
             } catch (Exception e) {
                 // Ignore here
             }
-            Assert.assertEquals(err.body().code(), BatchErrorCodeStrings.RequestBodyTooLarge);
+            Assert.assertEquals(err.body().code(), BatchErrorCodeStrings.REQUEST_BODY_TOO_LARGE);
         }
         catch (Exception err) {
             try {
@@ -481,7 +481,7 @@ public class TaskTests  extends BatchTestBase {
             } catch (Exception e) {
                 // Ignore here
             }
-            Assert.fail("Expected RequestBodyTooLarge error");
+            Assert.fail("Expected REQUEST_BODY_TOO_LARGE error");
         }
     }
 

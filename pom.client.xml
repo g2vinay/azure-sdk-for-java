@@ -97,7 +97,6 @@
       <azure-storage.version>4.4.0</azure-storage.version>
       <azure-client-authentication.version>1.6.3</azure-client-authentication.version>
 
-
       <!-- Maven Tool Versions -->
       <maven-build-tools.version>1.0.1-SNAPSHOT</maven-build-tools.version>
       <maven-javadoc.version>3.0.1</maven-javadoc.version>
@@ -121,6 +120,12 @@
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-client-runtime</artifactId>
             <version>${azure-client-runtime.version}</version>
+         </dependency>
+
+         <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>adal4j</artifactId>
+            <version>${adal4j.version}</version>
          </dependency>
 
          <!-- Other Microsoft Dependencies -->
@@ -178,13 +183,6 @@
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-client-authentication</artifactId>
             <version>${azure-client-authentication.version}</version>
-            <scope>test</scope>
-         </dependency>
-
-         <dependency>
-            <groupId>com.microsoft.azure</groupId>
-            <artifactId>adal4j</artifactId>
-            <version>${adal4j.version}</version>
             <scope>test</scope>
          </dependency>
 

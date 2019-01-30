@@ -52,7 +52,7 @@ public class JobPreparationTask {
      * value of 'jobpreparation'. No other task in the job can have the same ID
      * as the Job Preparation task. If you try to submit a task with the same
      * id, the Batch service rejects the request with error code
-     * TaskIdSameAsJobPreparationTask; if you are calling the REST API
+     * TASK_ID_SAME_AS_JOB_PREPARATION_TASK; if you are calling the REST API
      * directly, the HTTP status code is 409 (Conflict).
      */
     @JsonProperty(value = "id")
@@ -151,7 +151,7 @@ public class JobPreparationTask {
     private Boolean rerunOnNodeRebootAfterSuccess;
 
     /**
-     * Get the ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobpreparation'. No other task in the job can have the same ID as the Job Preparation task. If you try to submit a task with the same id, the Batch service rejects the request with error code TaskIdSameAsJobPreparationTask; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).
+     * Get the ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobpreparation'. No other task in the job can have the same ID as the Job Preparation task. If you try to submit a task with the same id, the Batch service rejects the request with error code TASK_ID_SAME_AS_JOB_PREPARATION_TASK; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).
      *
      * @return the id value
      */
@@ -160,7 +160,7 @@ public class JobPreparationTask {
     }
 
     /**
-     * Set the ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobpreparation'. No other task in the job can have the same ID as the Job Preparation task. If you try to submit a task with the same id, the Batch service rejects the request with error code TaskIdSameAsJobPreparationTask; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).
+     * Set the ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobpreparation'. No other task in the job can have the same ID as the Job Preparation task. If you try to submit a task with the same id, the Batch service rejects the request with error code TASK_ID_SAME_AS_JOB_PREPARATION_TASK; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).
      *
      * @param id the id value to set
      * @return the JobPreparationTask object itself.

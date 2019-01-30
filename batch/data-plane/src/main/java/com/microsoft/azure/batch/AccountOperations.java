@@ -7,7 +7,12 @@
 package com.microsoft.azure.batch;
 
 import com.microsoft.azure.PagedList;
-import com.microsoft.azure.batch.protocol.models.*;
+import com.microsoft.azure.batch.protocol.models.AccountListNodeAgentSkusOptions;
+import com.microsoft.azure.batch.protocol.models.BatchErrorException;
+import com.microsoft.azure.batch.protocol.models.NodeAgentSku;
+import com.microsoft.azure.batch.protocol.models.PoolNodeCounts;
+import com.microsoft.azure.batch.protocol.models.AccountListPoolNodeCountsOptions;
+
 
 import java.io.IOException;
 import java.util.Collection;
@@ -18,15 +23,15 @@ import java.util.Collection;
 public class AccountOperations implements IInheritedBehaviors {
 
     AccountOperations(BatchClient batchClient, Collection<BatchClientBehavior> customBehaviors) {
-        _parentBatchClient = batchClient;
+        parentBatchClient = batchClient;
 
         // inherit from instantiating parent
         InternalHelper.InheritClientBehaviorsAndSetPublicProperty(this, customBehaviors);
     }
 
-    private Collection<BatchClientBehavior> _customBehaviors;
+    private Collection<BatchClientBehavior> customBehaviors;
 
-    private final BatchClient _parentBatchClient;
+    private final BatchClient parentBatchClient;
 
     /**
      * Gets a collection of behaviors that modify or customize requests to the Batch service.
@@ -35,7 +40,7 @@ public class AccountOperations implements IInheritedBehaviors {
      */
     @Override
     public Collection<BatchClientBehavior> customBehaviors() {
-        return _customBehaviors;
+        return customBehaviors;
     }
 
     /**
@@ -46,7 +51,7 @@ public class AccountOperations implements IInheritedBehaviors {
      */
     @Override
     public IInheritedBehaviors withCustomBehaviors(Collection<BatchClientBehavior> behaviors) {
-        _customBehaviors = behaviors;
+        customBehaviors = behaviors;
         return this;
     }
 
@@ -88,7 +93,7 @@ public class AccountOperations implements IInheritedBehaviors {
         bhMgr.appendDetailLevelToPerCallBehaviors(detailLevel);
         bhMgr.applyRequestBehaviors(options);
 
-        return this._parentBatchClient.protocolLayer().accounts().listNodeAgentSkus(options);
+        return this.parentBatchClient.protocolLayer().accounts().listNodeAgentSkus(options);
     }
 
     /**
@@ -117,6 +122,6 @@ public class AccountOperations implements IInheritedBehaviors {
         bhMgr.appendDetailLevelToPerCallBehaviors(detailLevel);
         bhMgr.applyRequestBehaviors(options);
 
-        return this._parentBatchClient.protocolLayer().accounts().listPoolNodeCounts(options);
+        return this.parentBatchClient.protocolLayer().accounts().listPoolNodeCounts(options);
     }
 }
