@@ -353,6 +353,9 @@
                      <packages>com.microsoft.azure.keyvault*</packages>
                   </group>
                </groups>
+
+               <!-- TODO soon - enable this failure mode -->
+               <failOnError>false</failOnError>
             </configuration>
             <executions>
                <execution>
