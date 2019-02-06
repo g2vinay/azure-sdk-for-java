@@ -608,8 +608,9 @@
 
    <modules>
       <module>./template/client</module>
-      <module>./keyvault/data-plane</module>
       <module>./eng/code-quality-reports</module>
+      <module>./batch/data-plane</module>
+      <module>./keyvault/data-plane</module>
    </modules>
 
 </project>
