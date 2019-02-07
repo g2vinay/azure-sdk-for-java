@@ -145,7 +145,7 @@ public class TaskAddParameter {
      * completed successfully. If any of those tasks fail and exhaust their
      * retry counts, this task will never be scheduled. If the job does not
      * have usesTaskDependencies set to true, and this element is present, the
-     * request fails with error code TASK_DEPENDENCIES_NOT_SPECIFIED_ON_JOB.
+     * request fails with error code TaskDependenciesNotSpecifiedOnJob.
      */
     @JsonProperty(value = "dependsOn")
     private TaskDependencies dependsOn;
@@ -419,7 +419,7 @@ public class TaskAddParameter {
     }
 
     /**
-     * Get this task will not be scheduled until all tasks that it depends on have completed successfully. If any of those tasks fail and exhaust their retry counts, this task will never be scheduled. If the job does not have usesTaskDependencies set to true, and this element is present, the request fails with error code TASK_DEPENDENCIES_NOT_SPECIFIED_ON_JOB.
+     * Get this task will not be scheduled until all tasks that it depends on have completed successfully. If any of those tasks fail and exhaust their retry counts, this task will never be scheduled. If the job does not have usesTaskDependencies set to true, and this element is present, the request fails with error code TaskDependenciesNotSpecifiedOnJob.
      *
      * @return the dependsOn value
      */
@@ -428,7 +428,7 @@ public class TaskAddParameter {
     }
 
     /**
-     * Set this task will not be scheduled until all tasks that it depends on have completed successfully. If any of those tasks fail and exhaust their retry counts, this task will never be scheduled. If the job does not have usesTaskDependencies set to true, and this element is present, the request fails with error code TASK_DEPENDENCIES_NOT_SPECIFIED_ON_JOB.
+     * Set this task will not be scheduled until all tasks that it depends on have completed successfully. If any of those tasks fail and exhaust their retry counts, this task will never be scheduled. If the job does not have usesTaskDependencies set to true, and this element is present, the request fails with error code TaskDependenciesNotSpecifiedOnJob.
      *
      * @param dependsOn the dependsOn value to set
      * @return the TaskAddParameter object itself.

@@ -14,6 +14,7 @@ import com.microsoft.azure.batch.protocol.models.BatchErrorException;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Performs application-related operations on an Azure Batch account.
@@ -21,15 +22,15 @@ import java.util.Collection;
 public class ApplicationOperations implements IInheritedBehaviors {
 
     ApplicationOperations(BatchClient batchClient, Collection<BatchClientBehavior> customBehaviors) {
-        parentBatchClient = batchClient;
+        _parentBatchClient = batchClient;
 
         // inherit from instantiating parent
         InternalHelper.InheritClientBehaviorsAndSetPublicProperty(this, customBehaviors);
     }
 
-    private Collection<BatchClientBehavior> customBehaviors;
+    private Collection<BatchClientBehavior> _customBehaviors;
 
-    private final BatchClient parentBatchClient;
+    private final BatchClient _parentBatchClient;
 
     /**
      * Gets a collection of behaviors that modify or customize requests to the Batch service.
@@ -38,7 +39,7 @@ public class ApplicationOperations implements IInheritedBehaviors {
      */
     @Override
     public Collection<BatchClientBehavior> customBehaviors() {
-        return customBehaviors;
+        return _customBehaviors;
     }
 
     /**
@@ -49,7 +50,7 @@ public class ApplicationOperations implements IInheritedBehaviors {
      */
     @Override
     public IInheritedBehaviors withCustomBehaviors(Collection<BatchClientBehavior> behaviors) {
-        customBehaviors = behaviors;
+        _customBehaviors = behaviors;
         return this;
     }
 
@@ -77,7 +78,7 @@ public class ApplicationOperations implements IInheritedBehaviors {
         BehaviorManager bhMgr = new BehaviorManager(this.customBehaviors(), additionalBehaviors);
         bhMgr.applyRequestBehaviors(options);
 
-        return this.parentBatchClient.protocolLayer().applications().list(options);
+        return this._parentBatchClient.protocolLayer().applications().list(options);
     }
 
     /**
@@ -106,6 +107,6 @@ public class ApplicationOperations implements IInheritedBehaviors {
         BehaviorManager bhMgr = new BehaviorManager(this.customBehaviors(), additionalBehaviors);
         bhMgr.applyRequestBehaviors(options);
 
-        return this.parentBatchClient.protocolLayer().applications().get(applicationId, options);
+        return this._parentBatchClient.protocolLayer().applications().get(applicationId, options);
     }
 }

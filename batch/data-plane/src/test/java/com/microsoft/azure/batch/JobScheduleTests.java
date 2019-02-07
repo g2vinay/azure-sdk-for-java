@@ -81,7 +81,7 @@ public class JobScheduleTests extends BatchTestBase {
                 jobSchedule = batchClient.jobScheduleOperations().getJobSchedule(jobScheduleId);
                 Assert.assertTrue("Shouldn't be here, the jobschedule should be deleted", true);
             } catch (BatchErrorException err) {
-                if (!err.body().code().equals(BatchErrorCodeStrings.JOB_SCHEDULE_NOT_FOUND)) {
+                if (!err.body().code().equals(BatchErrorCodeStrings.JobScheduleNotFound)) {
                     throw err;
                 }
             }
@@ -133,7 +133,7 @@ public class JobScheduleTests extends BatchTestBase {
                 jobSchedule = batchClient.jobScheduleOperations().getJobSchedule(jobScheduleId);
                 Assert.assertTrue("Shouldn't be here, the jobschedule should be deleted", true);
             } catch (BatchErrorException err) {
-                if (!err.body().code().equals(BatchErrorCodeStrings.JOB_SCHEDULE_NOT_FOUND)) {
+                if (!err.body().code().equals(BatchErrorCodeStrings.JobScheduleNotFound)) {
                     throw err;
                 }
             }

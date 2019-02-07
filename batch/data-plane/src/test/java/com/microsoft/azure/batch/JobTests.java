@@ -78,7 +78,7 @@ public class JobTests extends BatchTestBase {
                 batchClient.jobOperations().getJob(jobId);
                 Assert.assertTrue("Shouldn't be here, the job should be deleted", true);
             } catch (BatchErrorException err) {
-                if (!err.body().code().equals(BatchErrorCodeStrings.JOB_NOT_FOUND)) {
+                if (!err.body().code().equals(BatchErrorCodeStrings.JobNotFound)) {
                     throw err;
                 }
             }

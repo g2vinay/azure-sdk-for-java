@@ -20,13 +20,13 @@ public class TaskAddCollectionParameter {
      * The total serialized size of this collection must be less than 1MB. If
      * it is greater than 1MB (for example if each task has 100's of resource
      * files or environment variables), the request will fail with code
-     * 'REQUEST_BODY_TOO_LARGE' and should be retried again with fewer tasks.
+     * 'RequestBodyTooLarge' and should be retried again with fewer tasks.
      */
     @JsonProperty(value = "value", required = true)
     private List<TaskAddParameter> value;
 
     /**
-     * Get the total serialized size of this collection must be less than 1MB. If it is greater than 1MB (for example if each task has 100's of resource files or environment variables), the request will fail with code 'REQUEST_BODY_TOO_LARGE' and should be retried again with fewer tasks.
+     * Get the total serialized size of this collection must be less than 1MB. If it is greater than 1MB (for example if each task has 100's of resource files or environment variables), the request will fail with code 'RequestBodyTooLarge' and should be retried again with fewer tasks.
      *
      * @return the value value
      */
@@ -35,7 +35,7 @@ public class TaskAddCollectionParameter {
     }
 
     /**
-     * Set the total serialized size of this collection must be less than 1MB. If it is greater than 1MB (for example if each task has 100's of resource files or environment variables), the request will fail with code 'REQUEST_BODY_TOO_LARGE' and should be retried again with fewer tasks.
+     * Set the total serialized size of this collection must be less than 1MB. If it is greater than 1MB (for example if each task has 100's of resource files or environment variables), the request will fail with code 'RequestBodyTooLarge' and should be retried again with fewer tasks.
      *
      * @param value the value value to set
      * @return the TaskAddCollectionParameter object itself.

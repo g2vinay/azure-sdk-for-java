@@ -41,7 +41,7 @@ public class JobReleaseTask {
      * value of 'jobrelease'. No other task in the job can have the same ID as
      * the Job Release task. If you try to submit a task with the same id, the
      * Batch service rejects the request with error code
-     * TASK_ID_SAME_AS_JOB_RELEASE_TASK; if you are calling the REST API directly,
+     * TaskIdSameAsJobReleaseTask; if you are calling the REST API directly,
      * the HTTP status code is 409 (Conflict).
      */
     @JsonProperty(value = "id")
@@ -123,7 +123,7 @@ public class JobReleaseTask {
     private UserIdentity userIdentity;
 
     /**
-     * Get the ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobrelease'. No other task in the job can have the same ID as the Job Release task. If you try to submit a task with the same id, the Batch service rejects the request with error code TASK_ID_SAME_AS_JOB_RELEASE_TASK; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).
+     * Get the ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobrelease'. No other task in the job can have the same ID as the Job Release task. If you try to submit a task with the same id, the Batch service rejects the request with error code TaskIdSameAsJobReleaseTask; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).
      *
      * @return the id value
      */
@@ -132,7 +132,7 @@ public class JobReleaseTask {
     }
 
     /**
-     * Set the ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobrelease'. No other task in the job can have the same ID as the Job Release task. If you try to submit a task with the same id, the Batch service rejects the request with error code TASK_ID_SAME_AS_JOB_RELEASE_TASK; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).
+     * Set the ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobrelease'. No other task in the job can have the same ID as the Job Release task. If you try to submit a task with the same id, the Batch service rejects the request with error code TaskIdSameAsJobReleaseTask; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).
      *
      * @param id the id value to set
      * @return the JobReleaseTask object itself.

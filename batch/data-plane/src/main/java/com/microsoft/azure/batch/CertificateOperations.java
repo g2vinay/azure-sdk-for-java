@@ -27,15 +27,16 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Performs certificate-related operations on an Azure Batch account.
  */
 public class CertificateOperations implements IInheritedBehaviors {
 
-    private Collection<BatchClientBehavior> customBehaviors;
+    private Collection<BatchClientBehavior> _customBehaviors;
 
-    private final BatchClient parentBatchClient;
+    private final BatchClient _parentBatchClient;
 
     /**
      * The SHA certificate algorithm.
@@ -43,7 +44,7 @@ public class CertificateOperations implements IInheritedBehaviors {
     public static final String SHA1_CERTIFICATE_ALGORITHM = "sha1";
 
     CertificateOperations(BatchClient batchClient, Iterable<BatchClientBehavior> inheritedBehaviors) {
-        parentBatchClient = batchClient;
+        _parentBatchClient = batchClient;
 
         // inherit from instantiating parent
         InternalHelper.InheritClientBehaviorsAndSetPublicProperty(this, inheritedBehaviors);
@@ -56,7 +57,7 @@ public class CertificateOperations implements IInheritedBehaviors {
      */
     @Override
     public Collection<BatchClientBehavior> customBehaviors() {
-        return customBehaviors;
+        return _customBehaviors;
     }
 
     /**
@@ -67,24 +68,24 @@ public class CertificateOperations implements IInheritedBehaviors {
      */
     @Override
     public IInheritedBehaviors withCustomBehaviors(Collection<BatchClientBehavior> behaviors) {
-        customBehaviors = behaviors;
+        _customBehaviors = behaviors;
         return this;
     }
 
     private static String getThumbPrint(java.security.cert.Certificate cert) throws NoSuchAlgorithmException, CertificateEncodingException {
-        final MessageDigest md = MessageDigest.getInstance("SHA-1");
-        final byte[] der = cert.getEncoded();
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        byte[] der = cert.getEncoded();
         md.update(der);
-        final byte[] digest = md.digest();
+        byte[] digest = md.digest();
         return hexify(digest);
     }
 
-    private static String hexify(byte[] bytes) {
-        final char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static String hexify (byte bytes[]) {
+        char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-        final StringBuilder buf = new StringBuilder(bytes.length * 2);
+        StringBuilder buf = new StringBuilder(bytes.length * 2);
 
-        for (final byte b : bytes) {
+        for (byte b : bytes) {
             buf.append(hexDigits[(b & 0xf0) >> 4]);
             buf.append(hexDigits[b & 0x0f]);
         }
@@ -117,7 +118,7 @@ public class CertificateOperations implements IInheritedBehaviors {
      */
     public void createCertificate(InputStream certStream, Iterable<BatchClientBehavior> additionalBehaviors) throws BatchErrorException, IOException, CertificateException, NoSuchAlgorithmException {
         CertificateFactory x509CertFact = CertificateFactory.getInstance("X.509");
-        X509Certificate cert = (X509Certificate) x509CertFact.generateCertificate(certStream);
+        X509Certificate cert = (X509Certificate)x509CertFact.generateCertificate(certStream);
 
         CertificateAddParameter addParam = new CertificateAddParameter()
             .withCertificateFormat(CertificateFormat.CER)
@@ -152,7 +153,7 @@ public class CertificateOperations implements IInheritedBehaviors {
         BehaviorManager bhMgr = new BehaviorManager(this.customBehaviors(), additionalBehaviors);
         bhMgr.applyRequestBehaviors(options);
 
-        this.parentBatchClient.protocolLayer().certificates().add(certificate, options);
+        this._parentBatchClient.protocolLayer().certificates().add(certificate, options);
     }
 
     /**
@@ -185,7 +186,7 @@ public class CertificateOperations implements IInheritedBehaviors {
         BehaviorManager bhMgr = new BehaviorManager(this.customBehaviors(), additionalBehaviors);
         bhMgr.applyRequestBehaviors(options);
 
-        this.parentBatchClient.protocolLayer().certificates().cancelDeletion(thumbprintAlgorithm, thumbprint, options);
+        this._parentBatchClient.protocolLayer().certificates().cancelDeletion(thumbprintAlgorithm, thumbprint, options);
     }
 
     /**
@@ -232,7 +233,7 @@ public class CertificateOperations implements IInheritedBehaviors {
         BehaviorManager bhMgr = new BehaviorManager(this.customBehaviors(), additionalBehaviors);
         bhMgr.applyRequestBehaviors(options);
 
-        this.parentBatchClient.protocolLayer().certificates().delete(thumbprintAlgorithm, thumbprint, options);
+        this._parentBatchClient.protocolLayer().certificates().delete(thumbprintAlgorithm, thumbprint, options);
     }
 
     /**
@@ -279,7 +280,7 @@ public class CertificateOperations implements IInheritedBehaviors {
         bhMgr.appendDetailLevelToPerCallBehaviors(detailLevel);
         bhMgr.applyRequestBehaviors(getCertificateOptions);
 
-        return this.parentBatchClient.protocolLayer().certificates().get(thumbprintAlgorithm, thumbprint, getCertificateOptions);
+        return this._parentBatchClient.protocolLayer().certificates().get(thumbprintAlgorithm, thumbprint, getCertificateOptions);
     }
 
     /**
@@ -321,6 +322,6 @@ public class CertificateOperations implements IInheritedBehaviors {
         bhMgr.appendDetailLevelToPerCallBehaviors(detailLevel);
         bhMgr.applyRequestBehaviors(certificateListOptions);
 
-        return this.parentBatchClient.protocolLayer().certificates().list(certificateListOptions);
+        return this._parentBatchClient.protocolLayer().certificates().list(certificateListOptions);
     }
 }

@@ -25,7 +25,7 @@ public class ApplicationPackageReference {
      * version is deployed.
      * If this is omitted on a pool, and no default version is specified for
      * this application, the request fails with the error code
-     * INVALID_APPLICATION_PACKAGE_REFERENCES and HTTP status code 409. If this is
+     * InvalidApplicationPackageReferences and HTTP status code 409. If this is
      * omitted on a task, and no default version is specified for this
      * application, the task fails with a pre-processing error.
      */
@@ -53,7 +53,7 @@ public class ApplicationPackageReference {
     }
 
     /**
-     * Get if this is omitted on a pool, and no default version is specified for this application, the request fails with the error code INVALID_APPLICATION_PACKAGE_REFERENCES and HTTP status code 409. If this is omitted on a task, and no default version is specified for this application, the task fails with a pre-processing error.
+     * Get if this is omitted on a pool, and no default version is specified for this application, the request fails with the error code InvalidApplicationPackageReferences and HTTP status code 409. If this is omitted on a task, and no default version is specified for this application, the task fails with a pre-processing error.
      *
      * @return the version value
      */
@@ -62,7 +62,7 @@ public class ApplicationPackageReference {
     }
 
     /**
-     * Set if this is omitted on a pool, and no default version is specified for this application, the request fails with the error code INVALID_APPLICATION_PACKAGE_REFERENCES and HTTP status code 409. If this is omitted on a task, and no default version is specified for this application, the task fails with a pre-processing error.
+     * Set if this is omitted on a pool, and no default version is specified for this application, the request fails with the error code InvalidApplicationPackageReferences and HTTP status code 409. If this is omitted on a task, and no default version is specified for this application, the task fails with a pre-processing error.
      *
      * @param version the version value to set
      * @return the ApplicationPackageReference object itself.

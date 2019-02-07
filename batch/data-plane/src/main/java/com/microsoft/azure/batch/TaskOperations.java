@@ -175,7 +175,7 @@ public class TaskOperations implements IInheritedBehaviors {
                                     }
                                 }
                             } else if (result.status() == TaskAddStatus.CLIENT_ERROR
-                                    && !result.error().code().equals(BatchErrorCodeStrings.TASK_EXISTS)) {
+                                    && !result.error().code().equals(BatchErrorCodeStrings.TaskExists)) {
                                 // Client error will be recorded
                                 failures.add(result);
                             }
@@ -183,9 +183,9 @@ public class TaskOperations implements IInheritedBehaviors {
                     }
                 }
             } catch (BatchErrorException e) {
-                // If we get REQUEST_BODY_TOO_LARGE could be that we chunked the tasks too large.
+                // If we get RequestBodyTooLarge could be that we chunked the tasks too large.
                 // Try decreasing the size unless caused by 1 task.
-                if (e.body().code().equals(BatchErrorCodeStrings.REQUEST_BODY_TOO_LARGE) && taskList.size() > 1) {
+                if (e.body().code().equals(BatchErrorCodeStrings.RequestBodyTooLarge) && taskList.size() > 1) {
                     // Use binary reduction to decrease size of submitted chunks
                     int midpoint = taskList.size() / 2;
                     // If the midpoint is less than the currentMaxTasks used to create new chunks,

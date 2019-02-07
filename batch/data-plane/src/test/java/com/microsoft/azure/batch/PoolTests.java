@@ -153,7 +153,7 @@ public class PoolTests extends BatchTestBase {
                 try {
                     batchClient.poolOperations().getPool(poolId);
                 } catch (BatchErrorException err) {
-                    if (err.body().code().equals(BatchErrorCodeStrings.POOL_NOT_FOUND)) {
+                    if (err.body().code().equals(BatchErrorCodeStrings.PoolNotFound)) {
                         deleted = true;
                         break;
                     } else {
@@ -235,7 +235,7 @@ public class PoolTests extends BatchTestBase {
                 Assert.assertTrue(err.body().values().get(0).value().contains(
                         "The user identity used for this operation does not have the required privelege Microsoft.Compute/images/read on the specified resource"));
             } else {
-                if (!err.body().code().equals("INVALID_PROPERTY_VALUE")) {
+                if (!err.body().code().equals("InvalidPropertyValue")) {
                     throw err;
                 }
             }
@@ -272,7 +272,7 @@ public class PoolTests extends BatchTestBase {
             batchClient.poolOperations().createPool(poolId, POOL_VM_SIZE, configuration, POOL_VM_COUNT);
             throw new Exception("The test case should throw exception here");
         } catch (BatchErrorException err) {
-            if (err.body().code().equals("INVALID_PROPERTY_VALUE")) {
+            if (err.body().code().equals("InvalidPropertyValue")) {
                 // Accepted Error
                 for (int i = 0; i < err.body().values().size(); i++) {
                     if (err.body().values().get(i).key().equals("Reason")) {
@@ -332,7 +332,7 @@ public class PoolTests extends BatchTestBase {
             batchClient.poolOperations().createPool(pool);
             throw new Exception("The test case should throw exception here");
         } catch (BatchErrorException err) {
-            if (err.body().code().equals("INVALID_PROPERTY_VALUE")) {
+            if (err.body().code().equals("InvalidPropertyValue")) {
                 // Accepted Error
                 for (int i = 0; i < err.body().values().size(); i++) {
                     if (err.body().values().get(i).key().equals("Reason")) {
@@ -424,7 +424,7 @@ public class PoolTests extends BatchTestBase {
                 try {
                     batchClient.poolOperations().getPool(poolId);
                 } catch (BatchErrorException err) {
-                    if (err.body().code().equals(BatchErrorCodeStrings.POOL_NOT_FOUND)) {
+                    if (err.body().code().equals(BatchErrorCodeStrings.PoolNotFound)) {
                         deleted = true;
                         break;
                     } else {
@@ -556,7 +556,7 @@ public class PoolTests extends BatchTestBase {
                 try {
                     batchClient.poolOperations().getPool(poolId);
                 } catch (BatchErrorException err) {
-                    if (err.body().code().equals(BatchErrorCodeStrings.POOL_NOT_FOUND)) {
+                    if (err.body().code().equals(BatchErrorCodeStrings.PoolNotFound)) {
                         deleted = true;
                         break;
                     } else {

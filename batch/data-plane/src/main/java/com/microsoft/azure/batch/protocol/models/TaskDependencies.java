@@ -23,7 +23,7 @@ public class TaskDependencies {
      * The taskIds collection is limited to 64000 characters total (i.e. the
      * combined length of all task IDs). If the taskIds collection exceeds the
      * maximum length, the Add Task request fails with error code
-     * TASK_DEPENDENCY_LIST_TOO_LONG. In this case consider using task ID ranges
+     * TaskDependencyListTooLong. In this case consider using task ID ranges
      * instead.
      */
     @JsonProperty(value = "taskIds")
@@ -38,7 +38,7 @@ public class TaskDependencies {
     private List<TaskIdRange> taskIdRanges;
 
     /**
-     * Get the taskIds collection is limited to 64000 characters total (i.e. the combined length of all task IDs). If the taskIds collection exceeds the maximum length, the Add Task request fails with error code TASK_DEPENDENCY_LIST_TOO_LONG. In this case consider using task ID ranges instead.
+     * Get the taskIds collection is limited to 64000 characters total (i.e. the combined length of all task IDs). If the taskIds collection exceeds the maximum length, the Add Task request fails with error code TaskDependencyListTooLong. In this case consider using task ID ranges instead.
      *
      * @return the taskIds value
      */
@@ -47,7 +47,7 @@ public class TaskDependencies {
     }
 
     /**
-     * Set the taskIds collection is limited to 64000 characters total (i.e. the combined length of all task IDs). If the taskIds collection exceeds the maximum length, the Add Task request fails with error code TASK_DEPENDENCY_LIST_TOO_LONG. In this case consider using task ID ranges instead.
+     * Set the taskIds collection is limited to 64000 characters total (i.e. the combined length of all task IDs). If the taskIds collection exceeds the maximum length, the Add Task request fails with error code TaskDependencyListTooLong. In this case consider using task ID ranges instead.
      *
      * @param taskIds the taskIds value to set
      * @return the TaskDependencies object itself.
