@@ -129,6 +129,12 @@
             <version>${azure-client-runtime.version}</version>
          </dependency>
 
+         <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>adal4j</artifactId>
+            <version>${adal4j.version}</version>
+         </dependency>
+
          <!-- Other Microsoft Dependencies -->
          <dependency>
             <groupId>com.microsoft.rest</groupId>
@@ -184,13 +190,6 @@
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-client-authentication</artifactId>
             <version>${azure-client-authentication.version}</version>
-            <scope>test</scope>
-         </dependency>
-
-         <dependency>
-            <groupId>com.microsoft.azure</groupId>
-            <artifactId>adal4j</artifactId>
-            <version>${adal4j.version}</version>
             <scope>test</scope>
          </dependency>
 
