@@ -54,7 +54,7 @@ public class PoolTests extends BatchTestBase {
     @Test
     public void canCRUDLowPriIaaSPool() throws Exception {
         // CREATE
-        String poolId = getStringIdWithUserNamePrefix("-canCRUDLowPri");
+        String poolId = getStringIdWithUserNamePrefix("-canCRUDLowPri-testPool");
 
         // Create a pool with 3 Small VMs
         String POOL_VM_SIZE = "STANDARD_A1";
