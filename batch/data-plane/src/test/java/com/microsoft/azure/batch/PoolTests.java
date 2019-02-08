@@ -1,8 +1,5 @@
-/**
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for
- * license information.
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 package com.microsoft.azure.batch;
 
@@ -35,7 +32,7 @@ public class PoolTests extends BatchTestBase {
 
     @Test
     public void testPoolOData() throws Exception {
-        CloudPool pool = batchClient.poolOperations().getPool(livePool.id(),
+        CloudPool pool = batchClient.poolOperations().getPool("VssAdministrator-testpool",
                 new DetailLevel.Builder().withExpandClause("stats").build());
         Assert.assertNotNull(pool.stats());
 
