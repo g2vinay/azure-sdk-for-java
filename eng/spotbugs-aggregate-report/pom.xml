@@ -70,7 +70,7 @@
                                 <source>..\..\keyvault\data-plane\azure-keyvault-core\src\main\java</source>
                                 <source>..\..\keyvault\data-plane\azure-keyvault-webkey\src\main\java</source>
                                 <source>..\..\keyvault\data-plane\azure-keyvault-extensions\src\main\java</source>
-                                <source>..\..\keyvault\data-plane\azure-batch\src\main\java</source>
+                                <source>..\..\batch\data-plane\src\main\java</source>
                             </sources>
                         </configuration>
                     </execution>
