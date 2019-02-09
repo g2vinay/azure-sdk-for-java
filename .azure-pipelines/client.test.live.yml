@@ -5,10 +5,11 @@ jobs:
 
   strategy:
     matrix:
-      AzureKeyVault:
-        pomFilePath: './keyvault/data-plane/pom.xml'
       AzureBatch:
         pomFilePath: './batch/data-plane/pom.xml'
+      AzureKeyVault:
+        pomFilePath: './keyvault/data-plane/pom.xml'
+      
 
   pool:
     vmImage: 'vs2017-win2016'
