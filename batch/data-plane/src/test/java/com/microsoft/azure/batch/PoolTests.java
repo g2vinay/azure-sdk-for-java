@@ -32,7 +32,7 @@ public class PoolTests extends BatchTestBase {
 
     @Test
     public void testPoolOData() throws Exception {
-        CloudPool pool = batchClient.poolOperations().getPool("VssAdministrator-testpool",
+        CloudPool pool = batchClient.poolOperations().getPool(livePool.id(),
                 new DetailLevel.Builder().withExpandClause("stats").build());
         Assert.assertNotNull(pool.stats());
 
