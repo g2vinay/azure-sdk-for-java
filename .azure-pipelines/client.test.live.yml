@@ -8,7 +8,7 @@ jobs:
       AzureKeyVault:
         pomFilePath: './keyvault/data-plane/pom.xml'
       AzureBatch:
-        pomFilePath: './keyvault/data-plane/pom.xml'
+        pomFilePath: './batch/data-plane/pom.xml'
 
   pool:
     vmImage: 'vs2017-win2016'
