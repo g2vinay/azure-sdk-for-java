@@ -1,9 +1,3 @@
-variables:
-  - group: KeyVault Test Secrets
-  - name: ARM_CLIENTID
-    value: $(java-keyvault-test-arm-client-id)
-  - name: ARM_CLIENTKEY
-    value: $(java-keyvault-test-arm-client-key)
 
 jobs:
 
