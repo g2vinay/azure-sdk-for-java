@@ -129,31 +129,6 @@ jobs:
 
     strategy:
       matrix:
-        Linux - Java 8:
-          OSName: 'Linux'
-          OSVmImage: 'ubuntu-16.04'
-          JavaVersion: '1.8'
-          ProfileFlag: ''
-        macOS - Java 8:
-          OSName: 'macOS'
-          OSVmImage: 'macOS-10.13'
-          JavaVersion: '1.8'
-          ProfileFlag: ''
-        Windows - Java 8:
-          OSName: 'Windows'
-          OSVmImage: 'vs2017-win2016'
-          JavaVersion: '1.8'
-          ProfileFlag: ''
-        Linux - Java LTS:
-          OSName: 'Linux'
-          OSVmImage: 'ubuntu-16.04'
-          JavaVersion: '1.11'
-          ProfileFlag: '-Djava-lts'
-        macOS - Java LTS:
-          OSName: 'macOS'
-          OSVmImage: 'macOS-10.13'
-          JavaVersion: '1.11'
-          ProfileFlag: '-Djava-lts'
         Windows - Java LTS:
           OSName: 'Windows'
           OSVmImage: 'vs2017-win2016'
