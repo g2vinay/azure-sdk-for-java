@@ -114,7 +114,7 @@ class TransferManagerTest extends APISpec {
         10                                     | BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 // Too many blocks.
     }
 
-    @Unroll
+   /* @Unroll
     def "Upload file headers"() {
         setup:
         // We have to use the defaultData here so we can calculate the MD5 on the uploadBlob case.
@@ -189,7 +189,7 @@ class TransferManagerTest extends APISpec {
         10                                      | "foo" | "bar"  | "fizz" | "buzz"
         BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 | null  | null   | null   | null
         BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 | "foo" | "bar"  | "fizz" | "buzz"
-    }
+    }*/
 
     @Unroll
     def "Upload file AC"() {

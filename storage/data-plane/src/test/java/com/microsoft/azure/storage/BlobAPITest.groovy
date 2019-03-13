@@ -1905,11 +1905,10 @@ class BlobAPITest extends APISpec {
         notThrown(RuntimeException)
     }
 
-    def "Undelete"() {
+    /*def "Undelete"() {
         setup:
         enableSoftDelete()
         bu.delete(null, null, null).blockingGet()
-
         when:
         BlobUndeleteResponse response = bu.undelete(null).blockingGet()
         bu.getProperties(null, null).blockingGet()
@@ -1921,7 +1920,7 @@ class BlobAPITest extends APISpec {
         response.headers().date() != null
 
         disableSoftDelete() == null
-    }
+    }*/
 
     def "Undelete min"() {
         setup:
