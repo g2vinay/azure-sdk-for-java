@@ -20,7 +20,6 @@ class AppendBlobAPITest extends APISpec {
     AppendBlobURL bu
 
     def setup() {
-        Assume.assumeTrue(false)
         bu = cu.createAppendBlobURL(generateBlobName())
         bu.create(null, null, null, null).blockingGet()
     }
@@ -49,6 +48,7 @@ class AppendBlobAPITest extends APISpec {
     @Unroll
     def "Upload file headers"() {
         setup:
+        BlockBlobURL bu = cu.createBlockBlobURL(generateBlobName())
         // We have to use the defaultData here so we can calculate the MD5 on the uploadBlob case.
         File file = File.createTempFile("testUpload", ".txt")
         file.deleteOnExit()

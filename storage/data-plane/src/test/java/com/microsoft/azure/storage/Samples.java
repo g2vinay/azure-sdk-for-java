@@ -39,7 +39,6 @@ public class Samples {
 
     //Samples only run in Live/Record mode.
     void checkMode() {
-        Assume.assumeTrue(false);
         String testMode = System.getenv("AZURE_TEST_MODE");
         if(testMode == null){
             testMode = "PlAYBACK";
