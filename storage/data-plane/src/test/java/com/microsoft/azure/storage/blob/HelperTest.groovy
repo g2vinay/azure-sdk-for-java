@@ -15,6 +15,10 @@ import java.time.ZoneOffset
 
 class HelperTest extends APISpec {
 
+    def setup(){
+        Assume.assumeTrue(false)
+    }
+
     def "responseError"() {
         when:
         cu.listBlobsFlatSegment("garbage", null, null).blockingGet()

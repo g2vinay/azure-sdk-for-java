@@ -19,6 +19,7 @@ class AppendBlobAPITest extends APISpec {
     AppendBlobURL bu
 
     def setup() {
+        Assume.assumeTrue(false)
         bu = cu.createAppendBlobURL(generateBlobName())
         bu.create(null, null, null, null).blockingGet()
     }

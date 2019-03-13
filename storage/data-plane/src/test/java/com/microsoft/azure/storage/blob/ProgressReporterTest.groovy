@@ -13,6 +13,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 class ProgressReporterTest extends APISpec {
 
+    def setup(){
+        Assume.assumeTrue(false)
+    }
+
     def "Report progress sequential"() {
         setup:
         def buf1 = getRandomData(10)

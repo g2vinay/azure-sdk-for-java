@@ -1911,7 +1911,7 @@ class BlobAPITest extends APISpec {
         bu.delete(null, null, null).blockingGet()
 
         when:
-        def response = bu.undelete(null).blockingGet()
+        BlobUndeleteResponse response = bu.undelete(null).blockingGet()
         bu.getProperties(null, null).blockingGet()
 
         then:

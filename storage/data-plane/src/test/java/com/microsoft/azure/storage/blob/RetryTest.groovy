@@ -11,6 +11,11 @@ import spock.lang.Unroll
 
 // Tests for package-private functionality.
 class RetryTest extends APISpec {
+
+    def setup(){
+        Assume.assumeTrue(false)
+    }
+
     static URL retryTestURL = new URL("http://" + RequestRetryTestFactory.RETRY_TEST_PRIMARY_HOST)
     static RequestRetryOptions retryTestOptions = new RequestRetryOptions(RetryPolicyType.EXPONENTIAL, 6,
             2, 1000, 4000, RequestRetryTestFactory.RETRY_TEST_SECONDARY_HOST)

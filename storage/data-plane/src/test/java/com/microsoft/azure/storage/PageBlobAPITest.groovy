@@ -17,6 +17,7 @@ class PageBlobAPITest extends APISpec {
     PageBlobURL bu
 
     def setup() {
+        Assume.assumeTrue(false)
         bu = cu.createPageBlobURL(generateBlobName())
         bu.create(PageBlobURL.PAGE_BYTES, null, null, null, null, null).blockingGet()
     }

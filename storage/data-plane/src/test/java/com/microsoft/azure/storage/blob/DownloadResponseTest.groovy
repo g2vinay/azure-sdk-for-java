@@ -13,6 +13,7 @@ class DownloadResponseTest extends APISpec {
     BlockBlobURL bu
 
     def setup() {
+        Assume.assumeTrue(false)
         bu = cu.createBlockBlobURL(generateBlobName())
         bu.upload(Flowable.just(defaultData), defaultText.length(), null, null, null, null).blockingGet()
     }

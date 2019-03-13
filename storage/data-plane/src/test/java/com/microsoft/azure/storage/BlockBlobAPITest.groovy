@@ -19,6 +19,7 @@ class BlockBlobAPITest extends APISpec {
     BlockBlobURL bu
 
     def setup() {
+        Assume.assumeTrue(false)
         bu = cu.createBlockBlobURL(generateBlobName())
         bu.upload(defaultFlowable, defaultDataSize, null, null,
                 null, null).blockingGet()

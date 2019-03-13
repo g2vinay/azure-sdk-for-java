@@ -138,7 +138,7 @@ class TransferManagerTest extends APISpec {
                         .withBlobContentMD5(contentMD5).withBlobContentType(contentType), null, null, null))
                 .blockingGet()
 
-        BlobGetPropertiesResponse response = bu.getProperties(null, null).blockingGet()
+        def response = bu.getProperties(null, null).blockingGet()
 
         then:
         validateBlobHeaders(response.headers(), cacheControl, contentDisposition, contentEncoding, contentLanguage,
@@ -659,8 +659,11 @@ class TransferManagerTest extends APISpec {
     @Unroll
     def "Download file IA null"() {
         when:
-        TransferManager.downloadBlobToFile(file, blobURL, null, null).blockingGet()
-
+        if(file != null) {
+            TransferManager.downloadBlobToFile(AsynchronousFileChannel.open(file.toPath()), blobURL, null, null).blockingGet()
+        } else{
+            TransferManager.downloadBlobToFile(file, blobURL, null, null).blockingGet()
+        }
         then:
         thrown(IllegalArgumentException)
 

@@ -35,6 +35,7 @@ class LoggingTest extends APISpec {
 
 
     def setupSpec() {
+        Assume.assumeTrue(false)
     }
 
     /*
