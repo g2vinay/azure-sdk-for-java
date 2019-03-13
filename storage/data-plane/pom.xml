@@ -34,7 +34,6 @@
       <groovy-eclipse-compiler.version>2.9.3-01</groovy-eclipse-compiler.version>
       <groovy-eclipse-batch.version>2.5.5-01</groovy-eclipse-batch.version>
       <netty-all.version>4.1.15.Final</netty-all.version>
-      <netty-socketio.version>1.7.17</netty-socketio.version>
     </properties>
 
 
@@ -76,7 +75,7 @@
         <dependency>
           <groupId>com.corundumstudio.socketio</groupId>
           <artifactId>netty-socketio</artifactId>
-          <version>${netty-socketio.version}</version>
+          <version>1.7.13</version>
         </dependency>
 
         <dependency>
