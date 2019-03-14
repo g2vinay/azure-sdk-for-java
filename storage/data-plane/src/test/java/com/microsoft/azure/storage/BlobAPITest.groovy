@@ -26,26 +26,6 @@ class BlobAPITest extends APISpec {
                 null, null).blockingGet()
     }
 
-    def "Undelete"() {
-        setup:
-        BlobURL bu = cu.createBlockBlobURL(generateBlobName())
-        bu.upload(defaultFlowable, defaultDataSize, null, null,
-            null, null).blockingGet()
-        enableSoftDelete()
-        bu.delete(null, null, null).blockingGet()
-        when:
-        BlobUndeleteResponse response = bu.undelete(null).blockingGet()
-        bu.getProperties(null, null).blockingGet()
-
-        then:
-        notThrown(StorageException)
-        response.headers().requestId() != null
-        response.headers().version() != null
-        response.headers().date() != null
-
-        disableSoftDelete() == null
-    }
-
     def "Download all null"() {
         when:
         DownloadResponse response = bu.download(null, null, false, null)
