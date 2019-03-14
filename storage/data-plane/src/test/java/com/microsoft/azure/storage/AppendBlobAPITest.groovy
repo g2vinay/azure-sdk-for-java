@@ -24,27 +24,6 @@ class AppendBlobAPITest extends APISpec {
         bu.create(null, null, null, null).blockingGet()
     }
 
-    def "Undelete"() {
-        setup:
-        BlobURL bu = cu.createBlockBlobURL(generateBlobName())
-        bu.upload(defaultFlowable, defaultDataSize, null, null,
-            null, null).blockingGet()
-        enableSoftDelete()
-        bu.delete(null, null, null).blockingGet()
-        when:
-        BlobUndeleteResponse response = bu.undelete(null).blockingGet()
-        bu.getProperties(null, null).blockingGet()
-
-        then:
-        notThrown(StorageException)
-        response.headers().requestId() != null
-        response.headers().version() != null
-        response.headers().date() != null
-
-        disableSoftDelete() == null
-    }
-
-
     @Unroll
     def "Upload file headers"() {
         setup:
@@ -94,6 +73,7 @@ class AppendBlobAPITest extends APISpec {
     @Unroll
     def "Upload file metadata"() {
         setup:
+        BlockBlobURL bu = cu.createBlockBlobURL(generateBlobName())
         Metadata metadata = new Metadata()
         if (key1 != null) {
             metadata.put(key1, value1)
@@ -121,6 +101,26 @@ class AppendBlobAPITest extends APISpec {
         10                                      | "foo" | "bar"  | "fizz" | "buzz"
         BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 | null  | null   | null   | null
         BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 | "foo" | "bar"  | "fizz" | "buzz"
+    }
+
+    def "Undelete"() {
+        setup:
+        BlobURL bu = cu.createBlockBlobURL(generateBlobName())
+        bu.upload(defaultFlowable, defaultDataSize, null, null,
+            null, null).blockingGet()
+        enableSoftDelete()
+        bu.delete(null, null, null).blockingGet()
+        when:
+        BlobUndeleteResponse response = bu.undelete(null).blockingGet()
+        bu.getProperties(null, null).blockingGet()
+
+        then:
+        notThrown(StorageException)
+        response.headers().requestId() != null
+        response.headers().version() != null
+        response.headers().date() != null
+
+        disableSoftDelete() == null
     }
 
     def "Create defaults"() {

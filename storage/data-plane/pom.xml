@@ -66,16 +66,16 @@
 
         <!-- Adding latest Netty as a temporary override of netty lib in v2 runtime.
         The old version prevents tests from running in Java 11. Issue is raised to have netty updated in v2 runtime -->
-        <!--dependency>
+        <dependency>
           <groupId>io.netty</groupId>
           <artifactId>netty-all</artifactId>
           <version>${netty-all.version}</version>
-        </dependency-->
+        </dependency>
 
         <dependency>
           <groupId>com.corundumstudio.socketio</groupId>
           <artifactId>netty-socketio</artifactId>
-          <version>1.7.17</version>
+          <version>1.7.13</version>
         </dependency>
 
         <dependency>
