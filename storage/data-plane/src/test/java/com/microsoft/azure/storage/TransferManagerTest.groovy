@@ -684,7 +684,7 @@ class TransferManagerTest extends APISpec {
         10 * 1024 * 1024  | 1 * 1024 * 1024   | 10       || 10
         500 * 1024 * 1024 | 100 * 1024 * 1024 | 2        || 5
         10 * 1024 * 1024  | 3 * 512 * 1024    | 3        || 7
-        200 * 1024 * 1024 | 40 * 1024 * 1024  | 4        || 5
+        200 * 1024 * 1024 | 10 * 1024 * 1024  | 4        || 20
         // Disabling this test, as it causes Java Out of Memory error on Dev Ops VM.
         // Will enable it later, when a decision on virtual machines upgrade is made.
         // Issue Link : https://github.com/Azure/azure-sdk-for-java/issues/3106
