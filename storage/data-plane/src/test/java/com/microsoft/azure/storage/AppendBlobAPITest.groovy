@@ -532,7 +532,7 @@ class AppendBlobAPITest extends APISpec {
                 .withBlobContentMD5(contentMD5).withBlobContentType(contentType), null, null, null))
             .blockingGet()
 
-        BlobGetPropertiesResponse response = bu.getProperties(null, null).blockingGet()
+        def response = bu.getProperties(null, null).blockingGet()
 
         then:
         validateBlobHeaders(response.headers(), cacheControl, contentDisposition, contentEncoding, contentLanguage,
@@ -593,7 +593,6 @@ class AppendBlobAPITest extends APISpec {
             null, null).blockingGet()
         enableSoftDelete()
         bu.delete(null, null, null).blockingGet()
-
         when:
         BlobUndeleteResponse response = bu.undelete(null).blockingGet()
         bu.getProperties(null, null).blockingGet()
@@ -606,4 +605,6 @@ class AppendBlobAPITest extends APISpec {
 
         disableSoftDelete() == null
     }
+
+
 }
