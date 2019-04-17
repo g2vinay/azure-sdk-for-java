@@ -517,7 +517,7 @@ class AppendBlobAPITest extends APISpec {
 
         when:
         def response = bu.undelete(null).blockingGet()
-        bu.getProperties(null, null).blockingGet()
+        //bu.getProperties(null, null).blockingGet()
 
         then:
         notThrown(StorageException)
