@@ -507,7 +507,7 @@ class AppendBlobAPITest extends APISpec {
     }
 
     //Grouping the below tests together to prevent GroovyCastException.
-    def "Undelete"() {
+    def "Block Blob Undelete"() {
         setup:
         BlobURL bu = cu.createBlockBlobURL(generateBlobName())
         bu.upload(defaultFlowable, defaultDataSize, null, null,
