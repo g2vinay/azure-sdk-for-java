@@ -9,6 +9,7 @@ import com.microsoft.azure.storage.blob.*
 import com.microsoft.azure.storage.blob.models.*
 import com.microsoft.rest.v2.Context
 import com.microsoft.rest.v2.http.HttpPipeline
+import org.junit.Assume
 
 import java.time.OffsetDateTime
 import java.util.concurrent.Executors
