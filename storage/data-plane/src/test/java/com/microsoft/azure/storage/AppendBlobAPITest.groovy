@@ -507,27 +507,6 @@ class AppendBlobAPITest extends APISpec {
     }
 
     //Grouping the below tests together to prevent GroovyCastException.
-    def "Block Blob Undelete"() {
-        setup:
-        BlobURL bu = cu.createBlockBlobURL(generateBlobName())
-        bu.upload(defaultFlowable, defaultDataSize, null, null,
-            null, null).blockingGet()
-        enableSoftDelete()
-        bu.delete(null, null, null).blockingGet()
-
-        when:
-        def response = bu.undelete(null).blockingGet()
-        //bu.getProperties(null, null).blockingGet()
-
-        then:
-        notThrown(StorageException)
-        response.headers().requestId() != null
-        response.headers().version() != null
-        response.headers().date() != null
-
-        disableSoftDelete() == null
-    }
-
     @Unroll
     def "Upload file headers"() {
         setup:
@@ -605,5 +584,26 @@ class AppendBlobAPITest extends APISpec {
         10                                      | "foo" | "bar"  | "fizz" | "buzz"
         BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 | null  | null   | null   | null
         BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 | "foo" | "bar"  | "fizz" | "buzz"
+    }
+
+    def "Undelete"() {
+        setup:
+        BlobURL bu = cu.createBlockBlobURL(generateBlobName())
+        bu.upload(defaultFlowable, defaultDataSize, null, null,
+            null, null).blockingGet()
+        enableSoftDelete()
+        bu.delete(null, null, null).blockingGet()
+
+        when:
+        BlobUndeleteResponse response = bu.undelete(null).blockingGet()
+        bu.getProperties(null, null).blockingGet()
+
+        then:
+        notThrown(StorageException)
+        response.headers().requestId() != null
+        response.headers().version() != null
+        response.headers().date() != null
+
+        disableSoftDelete() == null
     }
 }
