@@ -62,21 +62,6 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-      <!-- Adding latest Netty as a temporary override of netty lib in v2 runtime.
-            The old version prevents tests from running in Java 11. Issue is raised to have netty updated in v2 runtime
-             Issue Link: https://github.com/Azure/azure-sdk-for-java/issues/3107 -->
-        <dependency>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-all</artifactId>
-          <version>${netty-all.version}</version>
-        </dependency>
-
-        <dependency>
-          <groupId>com.corundumstudio.socketio</groupId>
-          <artifactId>netty-socketio</artifactId>
-          <version>${netty-socketio.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>adal4j</artifactId>
