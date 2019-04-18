@@ -24,6 +24,27 @@ class AppendBlobAPITest extends APISpec {
         bu.create(null, null, null, null).blockingGet()
     }
 
+    def "Undelete"() {
+        setup:
+        BlobURL bu = cu.createBlockBlobURL(generateBlobName())
+        bu.upload(defaultFlowable, defaultDataSize, null, null,
+            null, null).blockingGet()
+        enableSoftDelete()
+        bu.delete(null, null, null).blockingGet()
+
+        when:
+        BlobUndeleteResponse response = bu.undelete(null).blockingGet()
+        bu.getProperties(null, null).blockingGet()
+
+        then:
+        notThrown(StorageException)
+        response.headers().requestId() != null
+        response.headers().version() != null
+        response.headers().date() != null
+
+        disableSoftDelete() == null
+    }
+
     def "Create defaults"() {
         when:
         AppendBlobCreateResponse createResponse =
@@ -532,7 +553,7 @@ class AppendBlobAPITest extends APISpec {
                 .withBlobContentMD5(contentMD5).withBlobContentType(contentType), null, null, null))
             .blockingGet()
 
-        def response = bu.getProperties(null, null).blockingGet()
+        BlobGetPropertiesResponse response = bu.getProperties(null, null).blockingGet()
 
         then:
         validateBlobHeaders(response.headers(), cacheControl, contentDisposition, contentEncoding, contentLanguage,
@@ -542,7 +563,9 @@ class AppendBlobAPITest extends APISpec {
         // HTTP default content type is application/octet-stream.
 
         cleanup:
-        channel.close()
+        if(channel != null){
+            channel.close()
+        }
 
         where:
         // The MD5 is simply set on the blob for commitBlockList, not validated.
@@ -576,7 +599,9 @@ class AppendBlobAPITest extends APISpec {
         response.headers().metadata() == metadata
 
         cleanup:
-        channel.close()
+        if(channel != null){
+            channel.close()
+        }
 
         where:
         dataSize                                | key1  | value1 | key2   | value2
@@ -585,26 +610,4 @@ class AppendBlobAPITest extends APISpec {
         BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 | null  | null   | null   | null
         BlockBlobURL.MAX_UPLOAD_BLOB_BYTES + 10 | "foo" | "bar"  | "fizz" | "buzz"
     }
-
-    def "Undelete"() {
-        setup:
-        BlobURL bu = cu.createBlockBlobURL(generateBlobName())
-        bu.upload(defaultFlowable, defaultDataSize, null, null,
-            null, null).blockingGet()
-        enableSoftDelete()
-        bu.delete(null, null, null).blockingGet()
-        when:
-        BlobUndeleteResponse response = bu.undelete(null).blockingGet()
-        bu.getProperties(null, null).blockingGet()
-
-        then:
-        notThrown(StorageException)
-        response.headers().requestId() != null
-        response.headers().version() != null
-        response.headers().date() != null
-
-        disableSoftDelete() == null
-    }
-
-
 }

@@ -113,7 +113,7 @@
     <log4j-api.version>2.11.1</log4j-api.version>
     <groovy-eclipse-compiler.version>2.9.3-01</groovy-eclipse-compiler.version>
     <groovy-eclipse-batch.version>2.5.5-01</groovy-eclipse-batch.version>
-    <netty-all.version>4.1.34.Final</netty-all.version>
+    <netty-all.version>4.1.30.Final</netty-all.version>
     <netty-socketio.version>1.7.13</netty-socketio.version>
     <client-runtime.version.v2>2.1.0</client-runtime.version.v2>
     <slf4j-api.version>1.7.5</slf4j-api.version>
