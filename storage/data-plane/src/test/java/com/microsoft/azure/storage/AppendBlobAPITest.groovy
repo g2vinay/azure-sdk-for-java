@@ -96,6 +96,8 @@ class AppendBlobAPITest extends APISpec {
     @Unroll
     def "Upload file metadata"() {
         setup:
+        BlockBlobURL bu = cu.createBlockBlobURL(generateBlobName())
+        System.out.println("Starting test")
         Metadata metadata = new Metadata()
         if (key1 != null) {
             metadata.put(key1, value1)
