@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-
 package com.microsoft.azure.storage
 
 import com.microsoft.azure.storage.blob.*
@@ -1911,6 +1910,24 @@ class BlobAPITest extends APISpec {
 
         then:
         notThrown(RuntimeException)
+    }
+
+    def "Undelete"() {
+        setup:
+        enableSoftDelete()
+        bu.delete(null, null, null).blockingGet()
+
+        when:
+        def response = bu.undelete(null).blockingGet()
+        bu.getProperties(null, null).blockingGet()
+
+        then:
+        notThrown(StorageException)
+        response.headers().requestId() != null
+        response.headers().version() != null
+        response.headers().date() != null
+
+        disableSoftDelete() == null
     }
 
     def "Undelete min"() {
