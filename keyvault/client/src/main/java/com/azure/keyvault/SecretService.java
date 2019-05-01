@@ -40,7 +40,7 @@ interface SecretService {
     @PUT("secrets/{secret-name}")
     @ExpectedResponses({200})
     @UnexpectedResponseExceptionType(ServiceRequestException.class)
-    Mono<Response<Secret>> setSecret(@HostParam("url") String url,
+    Mono<Response<Secret>> addSecret(@HostParam("url") String url,
                                      @PathParam("secret-name") String secretName,
                                      @QueryParam("api-version") String apiVersion,
                                      @HeaderParam("accept-language") String acceptLanguage,

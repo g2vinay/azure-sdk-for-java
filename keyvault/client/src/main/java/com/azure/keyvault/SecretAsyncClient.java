@@ -68,7 +68,7 @@ public final class SecretAsyncClient extends ServiceClient {
     }
 
     /**
-     * The set operation adds a secret to the Azure Key Vault. If the named secret already exists, Azure Key Vault creates
+     * The add operation adds a secret to the Azure Key Vault. If the named secret already exists, Azure Key Vault creates
      * a new version of that secret. This operation requires the {@code secrets/set} permission.
      *
      * <p>The {@code secret} is required and its fields secret.name and secret.value cannot be null. The secret.expires,
@@ -79,7 +79,7 @@ public final class SecretAsyncClient extends ServiceClient {
      * @throws NullPointerException if {@code secret} is {@code null}.
      * @return A {@link Mono} containing a {@link Response} that contains the created {@link Secret}.
      */
-    public Mono<Response<Secret>> setSecret(Secret secret) {
+    public Mono<Response<Secret>> addSecret(Secret secret) {
         Objects.requireNonNull(secret, "The Secret input parameter cannot be null.");
         SecretRequestParameters parameters = new SecretRequestParameters()
             .value(secret.value())
@@ -87,20 +87,20 @@ public final class SecretAsyncClient extends ServiceClient {
             .contentType(secret.contentType())
             .secretAttributes(new SecretRequestAttributes(secret));
 
-        return service.setSecret(vaultEndpoint, secret.name(), API_VERSION, ACCEPT_LANGUAGE, parameters, CONTENT_TYPE_HEADER_VALUE);
+        return service.addSecret(vaultEndpoint, secret.name(), API_VERSION, ACCEPT_LANGUAGE, parameters, CONTENT_TYPE_HEADER_VALUE);
     }
 
     /**
-     * The set operation adds a secret to the Azure Key Vault. If the named secret already exists, Azure Key Vault creates a new version of that secret.
+     * The add operation adds a secret to the Azure Key Vault. If the named secret already exists, Azure Key Vault creates a new version of that secret.
      * This operation requires the {@code secrets/set} permission.
      *
      * @param name The name of the secret. It is required and cannot be null.
      * @param value The value of the secret. It is required and cannot be null.
      * @return A {@link Mono} containing a {@link Response} that contains the created {@link Secret}.
      */
-    public Mono<Response<Secret>> setSecret(String name, String value) {
+    public Mono<Response<Secret>> addSecret(String name, String value) {
         SecretRequestParameters parameters = new SecretRequestParameters().value(value);
-        return service.setSecret(vaultEndpoint, name, API_VERSION, ACCEPT_LANGUAGE, parameters, CONTENT_TYPE_HEADER_VALUE);
+        return service.addSecret(vaultEndpoint, name, API_VERSION, ACCEPT_LANGUAGE, parameters, CONTENT_TYPE_HEADER_VALUE);
     }
 
     /**
