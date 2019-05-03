@@ -10,10 +10,10 @@ import com.azure.common.http.rest.Response;
 import com.azure.common.http.rest.SimpleResponse;
 import com.azure.common.http.rest.VoidResponse;
 import com.azure.common.implementation.RestProxy;
-import com.azure.keyvault.implementation.SecretAttributesPage;
+import com.azure.keyvault.implementation.SecretBasePage;
 import com.azure.keyvault.models.DeletedSecret;
 import com.azure.keyvault.models.Secret;
-import com.azure.keyvault.models.SecretAttributes;
+import com.azure.keyvault.models.SecretBase;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -119,18 +119,18 @@ public final class SecretClient extends ServiceClient {
     }
 
     /**
-     * Get the secret which represents {@link SecretAttributes secretAttributes} from the key vault. Returns the latest version of the secret,
-     * if {@code secretAttributes.version} is not set. The get operation is applicable to any secret stored in Azure Key Vault.
+     * Get the secret which represents {@link SecretBase secretBase} from the key vault. Returns the latest version of the secret,
+     * if {@code secretBase.version} is not set. The get operation is applicable to any secret stored in Azure Key Vault.
      * This operation requires the {@code secrets/get} permission.
      *
-     * @param secretAttributes the {@link SecretAttributes} attributes of the secret being requested.
+     * @param secretBase the {@link SecretBase} attributes of the secret being requested.
      * @return A {@link Response} that contains the requested {@link Secret}.
-     * @throws com.azure.common.exception.ServiceRequestException when a secret with {@code secretAttributes.name} and {@code secretAttributes.version} doesn't exist in the key vault.
+     * @throws com.azure.common.exception.ServiceRequestException when a secret with {@code secretBase.name} and {@code secretBase.version} doesn't exist in the key vault.
      */
-    public Response<Secret> getSecret(SecretAttributes secretAttributes) {
-        Objects.requireNonNull(secretAttributes, "The Secret attributes parameter cannot be null.");
-        return secretAttributes.version() == null ? service.getSecret(vaultEndpoint, secretAttributes.name(), "", API_VERSION, ACCEPT_LANGUAGE, CONTENT_TYPE_HEADER_VALUE).block()
-            : service.getSecret(vaultEndpoint, secretAttributes.name(), secretAttributes.version(), API_VERSION, ACCEPT_LANGUAGE, CONTENT_TYPE_HEADER_VALUE).block();
+    public Response<Secret> getSecret(SecretBase secretBase) {
+        Objects.requireNonNull(secretBase, "The Secret attributes parameter cannot be null.");
+        return secretBase.version() == null ? service.getSecret(vaultEndpoint, secretBase.name(), "", API_VERSION, ACCEPT_LANGUAGE, CONTENT_TYPE_HEADER_VALUE).block()
+            : service.getSecret(vaultEndpoint, secretBase.name(), secretBase.version(), API_VERSION, ACCEPT_LANGUAGE, CONTENT_TYPE_HEADER_VALUE).block();
     }
 
     /**
@@ -150,21 +150,21 @@ public final class SecretClient extends ServiceClient {
      * attributes of an existing stored secret and attributes that are not specified in the request are left unchanged.
      * The value of a secret itself cannot be changed. This operation requires the {@code secrets/set} permission.
      *
-     * <p>The {@code secretAttributes} is required and its fields secretAttributes.name and secretAttributes.version cannot be null.</p>
+     * <p>The {@code secretBase} is required and its fields secretBase.name and secretBase.version cannot be null.</p>
      *
-     * @param secretAttributes the {@link SecretAttributes} object with updated properties.
-     * @throws NullPointerException if {@code secretAttributes} is {@code null}.
-     * @return A {@link Response} that contains the updated {@link SecretAttributes}.
-     * @throws com.azure.common.exception.ServiceRequestException when a secret with secretAttributes.name and secretAttributes.version doesn't exist in the key vault.
+     * @param secretBase the {@link SecretBase} object with updated properties.
+     * @throws NullPointerException if {@code secretBase} is {@code null}.
+     * @return A {@link Response} that contains the updated {@link SecretBase}.
+     * @throws com.azure.common.exception.ServiceRequestException when a secret with secretBase.name and secretBase.version doesn't exist in the key vault.
      */
-    public Response<SecretAttributes> updateSecretAttributes(SecretAttributes secretAttributes) {
-        Objects.requireNonNull(secretAttributes, "The secretAttributes input parameter cannot be null.");
+    public Response<SecretBase> updateSecret(SecretBase secretBase) {
+        Objects.requireNonNull(secretBase, "The secretBase input parameter cannot be null.");
         SecretRequestParameters parameters = new SecretRequestParameters()
-                .tags(secretAttributes.tags())
-                .contentType(secretAttributes.contentType())
-                .secretAttributes(new SecretRequestAttributes(secretAttributes));
+                .tags(secretBase.tags())
+                .contentType(secretBase.contentType())
+                .secretAttributes(new SecretRequestAttributes(secretBase));
 
-        return service.updateSecret(vaultEndpoint, secretAttributes.name(), secretAttributes.version(), API_VERSION, ACCEPT_LANGUAGE, parameters, CONTENT_TYPE_HEADER_VALUE).block();
+        return service.updateSecret(vaultEndpoint, secretBase.name(), secretBase.version(), API_VERSION, ACCEPT_LANGUAGE, parameters, CONTENT_TYPE_HEADER_VALUE).block();
     }
 
     /**
@@ -244,15 +244,15 @@ public final class SecretClient extends ServiceClient {
 
     /**
      * List the secrets in the key vault. The list Secrets operation is applicable to the entire vault. The individual secret response
-     * in the list is represented by {@link SecretAttributes} as only the base secret identifier and its attributes are
+     * in the list is represented by {@link SecretBase} as only the base secret identifier and its attributes are
      * provided in the response. The secret values and individual secret versions are not listed in the response. This operation requires the {@code secrets/list} permission.
      *
-     * <p>It is possible to get full Secrets with values from this information. Loop over the {@link SecretAttributes secretAttributes} and
-     * call {@link SecretClient#getSecret(SecretAttributes)} . This will return the {@link Secret} secrets with values included of its latest version.</p>
+     * <p>It is possible to get full Secrets with values from this information. Loop over the {@link SecretBase secretBase} and
+     * call {@link SecretClient#getSecret(SecretBase)} . This will return the {@link Secret} secrets with values included of its latest version.</p>
      *
-     * @return A {@link List} containing {@link SecretAttributes} of all the secrets in the vault. The {@link SecretAttributes} contains all the information about the secret, except its value.
+     * @return A {@link List} containing {@link SecretBase} of all the secrets in the vault. The {@link SecretBase} contains all the information about the secret, except its value.
      */
-    public List<SecretAttributes> listSecrets() {
+    public List<SecretBase> listSecrets() {
         return service.getSecrets(vaultEndpoint, DEFAULT_MAX_PAGE_RESULTS, API_VERSION, ACCEPT_LANGUAGE, CONTENT_TYPE_HEADER_VALUE)
             .flatMapMany(this::extractAndFetchSecrets).collectList().block();
     }
@@ -269,17 +269,17 @@ public final class SecretClient extends ServiceClient {
     }
 
     /**
-     * List all versions of the specified secret. The individual secret response in the list is represented by {@link SecretAttributes}
+     * List all versions of the specified secret. The individual secret response in the list is represented by {@link SecretBase}
      * as only the base secret identifier and its attributes are provided in the response. The secret values are
      * not provided in the response. This operation requires the {@code secrets/list} permission.
      *
-     * <p>It is possible to get full Secrets with values for each version from this information. Loop over the {@link SecretAttributes secretAttributes} and
-     * call {@link SecretClient#getSecret(SecretAttributes)} . This will return the {@link Secret} secrets with values included of the specified versions.</p>
+     * <p>It is possible to get full Secrets with values for each version from this information. Loop over the {@link SecretBase secretBase} and
+     * call {@link SecretClient#getSecret(SecretBase)} . This will return the {@link Secret} secrets with values included of the specified versions.</p>
      *
      * @param name The name of the secret.
-     * @return A {@link List} containing {@link SecretAttributes} of all the versions of the specified secret in the vault. List is empty if secret with {@code name} does not exist in key vault
+     * @return A {@link List} containing {@link SecretBase} of all the versions of the specified secret in the vault. List is empty if secret with {@code name} does not exist in key vault
      */
-    public List<SecretAttributes> listSecretVersions(String name) {
+    public List<SecretBase> listSecretVersions(String name) {
         return  service.getSecretVersions(vaultEndpoint, name, DEFAULT_MAX_PAGE_RESULTS, API_VERSION, ACCEPT_LANGUAGE, CONTENT_TYPE_HEADER_VALUE)
             .flatMapMany(this::extractAndFetchSecrets).collectList().block();
     }
@@ -288,14 +288,14 @@ public final class SecretClient extends ServiceClient {
      * Gets attributes of all the secrets given by the {@code nextPageLink} that was retrieved from a call to
      * {@link SecretClient#listSecrets()}.
      *
-     * @param nextPageLink The {@link SecretAttributesPage#nextLink()} from a previous, successful call to one of the list operations.
-     * @return A stream of {@link SecretAttributes} from the next page of results.
+     * @param nextPageLink The {@link SecretBasePage#nextLink()} from a previous, successful call to one of the list operations.
+     * @return A stream of {@link SecretBase} from the next page of results.
      */
-    private Flux<SecretAttributes> listSecretsNext(String nextPageLink) {
+    private Flux<SecretBase> listSecretsNext(String nextPageLink) {
         return service.getSecrets(vaultEndpoint, nextPageLink, ACCEPT_LANGUAGE, CONTENT_TYPE_HEADER_VALUE).flatMapMany(this::extractAndFetchSecrets);
     }
 
-    private Publisher<SecretAttributes> extractAndFetchSecrets(PagedResponse<SecretAttributes> page) {
+    private Publisher<SecretBase> extractAndFetchSecrets(PagedResponse<SecretBase> page) {
         String nextPageLink = page.nextLink();
         if (nextPageLink == null) {
             return Flux.fromIterable(page.items());
@@ -308,7 +308,7 @@ public final class SecretClient extends ServiceClient {
      * {@link SecretClient#listDeletedSecrets()}.
      *
      * @param nextPageLink The {@link com.azure.keyvault.implementation.DeletedSecretPage#nextLink()} from a previous, successful call to one of the list operations.
-     * @return A stream of {@link SecretAttributes} from the next page of results.
+     * @return A stream of {@link SecretBase} from the next page of results.
      */
     private Flux<DeletedSecret> listDeletedSecretsNext(String nextPageLink) {
         return service.getDeletedSecrets(vaultEndpoint, nextPageLink, ACCEPT_LANGUAGE, CONTENT_TYPE_HEADER_VALUE).flatMapMany(this::extractAndFetchDeletedSecrets);
