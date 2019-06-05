@@ -158,13 +158,16 @@ SOFTWARE.
       <version>${java-uuid-generator.version}</version>
     </dependency>
 
-
 <dependency>
   <groupId>com.fasterxml.uuid</groupId>
   <artifactId>java-uuid-generator</artifactId>
   <version>${java-uuid-generator.version}</version>
 </dependency>
-
+<dependency>
+  <groupId>commons-io</groupId>
+  <artifactId>commons-io</artifactId>
+  <version>${commons-io.version}</version>
+</dependency>
 <dependency>
   <groupId>commons-validator</groupId>
   <artifactId>commons-validator</artifactId>

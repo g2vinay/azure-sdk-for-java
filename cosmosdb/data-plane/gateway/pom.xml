@@ -83,13 +83,14 @@ SOFTWARE.
       <artifactId>azure-cosmosdb-commons</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>com.microsoft.azure</groupId>
       <artifactId>azure-cosmosdb-commons-test-utils</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
@@ -126,11 +127,6 @@ SOFTWARE.
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
