@@ -11,6 +11,37 @@ variables:
   pomFile: './cosmosdb/data-plane/pom.xml'
 
 jobs:
+
+  - job: 'Build'
+
+    pool:
+      vmImage: 'ubuntu-16.04'
+
+    strategy:
+      matrix:
+        Java 8:
+          ArtifactName: 'packages'
+          ProfileFlag: ''
+          JavaVersion: '1.8'
+
+    steps:
+      - task: Maven@3
+        displayName: 'Build and Package'
+        inputs:
+          mavenPomFile: pom.client.xml
+          goals: 'package'
+          options: '$(DefaultOptions) $(ProfileFlag) "-DpackageOutputDirectory=$(Build.ArtifactStagingDirectory)" -Dmaven.test.skip=true -Dinclude-template' # We include template-module so we ensure it always builds in CI
+          mavenOptions: '$(LoggingOptions)'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: $(JavaVersion)
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: false
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifacts $(ArtifactName)'
+        inputs:
+          artifactName: '$(ArtifactName)'
+
   - job: 'Emulator'
 
     timeoutInMinutes: 120
