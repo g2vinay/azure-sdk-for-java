@@ -22,7 +22,7 @@ jobs:
           JavaVersion: '1.8'
     pool:
       vmImage: $(OSVmImage)			
-			
+						
 		steps:
 			- powershell: 
 				Write-Host "Downloading Cosmos Emulator - $(EmulatorMsiUrl)"
