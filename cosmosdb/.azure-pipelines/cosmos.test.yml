@@ -21,9 +21,9 @@ jobs:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
     pool:
-      vmImage: $(OSVmImage)			
-						
-		steps:
+      vmImage: $(OSVmImage)
+
+			steps:
 			- powershell: 
 				Write-Host "Downloading Cosmos Emulator - $(EmulatorMsiUrl)"
 				wget "$(EmulatorMsiUrl)" -outfile "$env:temp\azure-cosmosdb-emulator.msi"
