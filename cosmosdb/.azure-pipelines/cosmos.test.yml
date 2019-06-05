@@ -21,8 +21,7 @@ jobs:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
     pool:
-      vmImage: $(OSVmImage)
-			
+      vmImage: $(OSVmImage)			
 			
 		steps:
 			- powershell: 
