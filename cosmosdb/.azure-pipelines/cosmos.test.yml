@@ -159,7 +159,7 @@ jobs:
         checkStyleRunAnalysis: true
         pmdRunAnalysis: true
         findBugsRunAnalysis: true
-        jdkVersionOption: $(JavaVersion)
+        jdkVersionOption: '1.8'
       condition: succeededOrFailed()
 
     - task: CopyFiles@2
