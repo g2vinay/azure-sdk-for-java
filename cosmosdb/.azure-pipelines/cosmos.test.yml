@@ -152,12 +152,14 @@ jobs:
     - task: Maven@1
       displayName: 'Unit Tests'
       inputs:
+        mavenPomFile: $(pomFile)
         goals: 'package test'
         options: '-Punit'
         testResultsFiles: '**/junitreports/TEST-*.xml'
         checkStyleRunAnalysis: true
         pmdRunAnalysis: true
         findBugsRunAnalysis: true
+        jdkVersionOption: $(JavaVersion)
       condition: succeededOrFailed()
 
     - task: CopyFiles@2
