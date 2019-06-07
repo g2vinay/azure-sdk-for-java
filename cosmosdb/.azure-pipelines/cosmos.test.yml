@@ -44,6 +44,15 @@ jobs:
         displayName: 'Download Public Cosmos DB Emulator'
 
       - script: |
+         echo "Deleting Azure Cosmos DB Emulator directory"
+         dir "%ProgramFiles%\"
+         rmdir /Q /S "%ProgramFiles%\Azure Cosmos DB Emulator"
+         echo "Directory after deleting"
+         dir "%ProgramFiles%\"
+        displayName: 'Cleanup already installed Azure Cosmos DB Emulator'
+
+
+      - script: |
          choco install lessmsi
          choco upgrade lessmsi
          mkdir "%TEMP%\Azure Cosmos DB Emulator"
