@@ -109,16 +109,6 @@ jobs:
         condition: succeededOrFailed()
 
       - task: Maven@3
-        displayName: 'RxJava Driver Unit Tests'
-        inputs:
-          mavenPomFile: $(pomFile)
-          goals: 'clean package'
-          testResultsFiles: '**/junitreports/TEST-*.xml'
-          mavenAuthenticateFeed: true
-          jdkVersionOption: $(JavaVersion)
-        condition: succeededOrFailed()
-
-      - task: Maven@3
         displayName: $(TestDisplayName)
         inputs:
          mavenPomFile: $(pomFile)
