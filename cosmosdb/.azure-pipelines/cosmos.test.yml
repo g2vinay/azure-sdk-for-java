@@ -20,17 +20,11 @@ jobs:
     continueOnError: false
     strategy:
       matrix:
-        Emulator_Integration_Tests_Java8:
+        Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
-
-        Emulator_Examples_Tests_Java8:
-          OSVmImage: 'vs2017-win2016'
-          JavaVersion: '1.8'
-          ProfileFlag: '-Pexamples'
-          TestDisplayName: 'Examples Integration Tests'
 
     pool:
       vmImage: $(OSVmImage)
@@ -118,11 +112,23 @@ jobs:
         condition: succeededOrFailed()
 
       - task: Maven@3
-        displayName: $(TestDisplayName)
+        displayName: 'Emulator only Integration Tests'
         inputs:
          mavenPomFile: $(pomFile)
          goals: 'package verify'
-         options: '$(ProfileFlag) -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
+         options: '-Pemulator -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
+         testResultsFiles: '**/junitreports/TEST-*.xml'
+         mavenAuthenticateFeed: true
+         jdkVersionOption: $(JavaVersion)
+        condition: succeededOrFailed()
+
+
+      - task: Maven@3
+        displayName: 'Examples Integration Tests'
+        inputs:
+         mavenPomFile: $(pomFile)
+         goals: 'package verify'
+         options: '-Pexamples -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
          testResultsFiles: '**/junitreports/TEST-*.xml'
          mavenAuthenticateFeed: true
          jdkVersionOption: $(JavaVersion)
