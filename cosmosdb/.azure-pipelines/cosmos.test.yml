@@ -25,14 +25,14 @@ jobs:
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
-          ProtocolFlag: '-DPROTOCOLS="Tcp"'
+          ProtocolFlag: '-DPROTOCOLS="[Tcp]"'
 
         Https_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
-          ProtocolFlag: '-DPROTOCOLS="Https"'
+          ProtocolFlag: '-DPROTOCOLS="[Https]"'
 
         Examples_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
