@@ -122,10 +122,12 @@ jobs:
         inputs:
          mavenPomFile: $(pomFile)
          goals: 'package verify'
-         options: '$(ProfileFlag) -DPROTOCOLS=[\"$(ProtocolFlag)\"] -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
+         options: '$(ProfileFlag) -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
          testResultsFiles: '**/junitreports/TEST-*.xml'
          mavenAuthenticateFeed: true
          jdkVersionOption: $(JavaVersion)
+        env:
+          PROTOCOLS=["$(ProtocolFlag)"]
         condition: succeededOrFailed()
 
       - task: CopyFiles@2
