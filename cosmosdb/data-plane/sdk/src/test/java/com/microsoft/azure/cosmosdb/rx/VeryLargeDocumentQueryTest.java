@@ -37,6 +37,8 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import rx.Observable;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static org.apache.commons.io.FileUtils.ONE_MB;
@@ -96,11 +98,12 @@ public class VeryLargeDocumentQueryTest extends TestSuiteBase {
 
     private static Document getDocumentDefinition() {
         String uuid = UUID.randomUUID().toString();
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd_mm_yy_hh_mm_ss"));
         Document doc = new Document(String.format("{ "
                 + "\"id\": \"%s\", "
                 + "\"mypk\": \"%s\", "
                 + "}"
-                , uuid, uuid));
+                , uuid + timestamp, uuid + timestamp));
         return doc;
     }
 
