@@ -127,7 +127,7 @@ jobs:
          mavenAuthenticateFeed: true
          jdkVersionOption: $(JavaVersion)
         env:
-          PROTOCOLS=["$(ProtocolFlag)"]
+          PROTOCOLS: ["$(ProtocolFlag)"]
         condition: succeededOrFailed()
 
       - task: CopyFiles@2
