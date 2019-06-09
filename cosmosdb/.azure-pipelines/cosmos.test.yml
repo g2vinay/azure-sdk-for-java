@@ -20,17 +20,26 @@ jobs:
     continueOnError: false
     strategy:
       matrix:
-        Integration_Tests_Java8:
+        Tcp_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
+          ProtocolFlag: '["Tcp"]'
+
+        Https_Integration_Tests_Java8:
+          OSVmImage: 'vs2017-win2016'
+          JavaVersion: '1.8'
+          ProfileFlag: '-Pemulator'
+          TestDisplayName: 'Emulator only Integration Tests'
+          ProtocolFlag: '["Https"]'
 
         Examples_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
           ProfileFlag: '-Pexamples'
           TestDisplayName: 'Examples Integration Tests'
+          ProtocolFlag: ''
 
     pool:
       vmImage: $(OSVmImage)
@@ -135,8 +144,18 @@ jobs:
 
   - job: 'Unit_Tests'
 
+    strategy:
+      matrix:
+        Windows - java8:
+          OSVmImage: 'vs2017-win2016'
+          JavaVersion: '1.8'
+        
+        MacOS - java8:
+          OSVmImage: 'macOS-10.13'
+          JavaVersion: '1.8'
+
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: $(OSVmImage)
 
     steps:
     - task: Maven@1
@@ -149,7 +168,7 @@ jobs:
         checkStyleRunAnalysis: true
         pmdRunAnalysis: true
         findBugsRunAnalysis: true
-        jdkVersionOption: '1.8'
+        jdkVersionOption: $(JavaVersion)
       condition: succeededOrFailed()
 
     - task: CopyFiles@2
