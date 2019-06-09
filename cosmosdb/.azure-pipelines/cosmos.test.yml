@@ -26,6 +26,12 @@ jobs:
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
 
+        Examples_Integration_Tests_Java8:
+          OSVmImage: 'vs2017-win2016'
+          JavaVersion: '1.8'
+          ProfileFlag: '-Pexamples'
+          TestDisplayName: 'Examples Integration Tests'
+
     pool:
       vmImage: $(OSVmImage)
 
@@ -36,15 +42,6 @@ jobs:
          Write-Host "Finished Downloading Cosmos Emulator - $env:temp\azure-cosmosdb-emulator.msi"
          dir "$env:temp"
         displayName: 'Download Public Cosmos DB Emulator'
-
-      - script: |
-         echo "Deleting Azure Cosmos DB Emulator directory"
-         dir "%ProgramFiles%\"
-         rmdir /Q /S "%ProgramFiles%\Azure Cosmos DB Emulator"
-         echo "Directory after deleting"
-         dir "%ProgramFiles%\"
-        displayName: 'Cleanup already installed Azure Cosmos DB Emulator'
-
 
       - script: |
          choco install lessmsi
@@ -112,23 +109,11 @@ jobs:
         condition: succeededOrFailed()
 
       - task: Maven@3
-        displayName: 'Emulator only Integration Tests'
+        displayName: $(TestDisplayName)
         inputs:
          mavenPomFile: $(pomFile)
          goals: 'package verify'
-         options: '-Pemulator -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
-         testResultsFiles: '**/junitreports/TEST-*.xml'
-         mavenAuthenticateFeed: true
-         jdkVersionOption: $(JavaVersion)
-        condition: succeededOrFailed()
-
-
-      - task: Maven@3
-        displayName: 'Examples Integration Tests'
-        inputs:
-         mavenPomFile: $(pomFile)
-         goals: 'package verify'
-         options: '-Pexamples -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
+         options: '$(ProfileFlag) -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
          testResultsFiles: '**/junitreports/TEST-*.xml'
          mavenAuthenticateFeed: true
          jdkVersionOption: $(JavaVersion)
