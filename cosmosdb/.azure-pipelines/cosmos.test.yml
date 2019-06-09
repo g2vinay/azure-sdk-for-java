@@ -25,14 +25,14 @@ jobs:
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
-          ProtocolFlag: '[\"Tcp\"]'
+          ProtocolFlag: '["Tcp"]'
 
         Https_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
-          ProtocolFlag: '[\"Https\"]'
+          ProtocolFlag: '["Https"]'
 
 
         Examples_Integration_Tests_Java8:
@@ -40,7 +40,7 @@ jobs:
           JavaVersion: '1.8'
           ProfileFlag: '-Pexamples'
           TestDisplayName: 'Examples Integration Tests'
-          ProtocolFlag: '[\"Https\", \"Tcp\"]'
+          ProtocolFlag: '["Https", "Tcp"]'
 
     pool:
       vmImage: $(OSVmImage)
