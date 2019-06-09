@@ -32,7 +32,7 @@ jobs:
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
-          ProtocolFlag: '-DPROTOCOLS=[\"Http\"]'
+          ProtocolFlag: '-DPROTOCOLS=[\"Https\"]'
 
         Examples_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
