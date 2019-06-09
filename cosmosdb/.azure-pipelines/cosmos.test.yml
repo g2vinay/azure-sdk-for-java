@@ -25,14 +25,14 @@ jobs:
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
-          ProtocolFlag: '-DPROTOCOLS=[\"Tcp\"]'
+          ProtocolFlag: 'Tcp'
 
         Https_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
           ProfileFlag: '-Pemulator'
           TestDisplayName: 'Emulator only Integration Tests'
-          ProtocolFlag: '-DPROTOCOLS=[\"Https\"]'
+          ProtocolFlag: 'Https'
 
         Examples_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
@@ -122,7 +122,7 @@ jobs:
         inputs:
          mavenPomFile: $(pomFile)
          goals: 'package verify'
-         options: '$(ProfileFlag) $(ProtocolFlag) -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
+         options: '$(ProfileFlag) -DPROTOCOLS=[\"$(ProtocolFlag)\"] -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
          testResultsFiles: '**/junitreports/TEST-*.xml'
          mavenAuthenticateFeed: true
          jdkVersionOption: $(JavaVersion)
