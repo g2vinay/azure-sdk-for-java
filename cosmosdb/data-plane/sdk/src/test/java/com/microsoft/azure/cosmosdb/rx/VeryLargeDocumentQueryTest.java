@@ -98,7 +98,7 @@ public class VeryLargeDocumentQueryTest extends TestSuiteBase {
 
     private static Document getDocumentDefinition() {
         String uuid = UUID.randomUUID().toString();
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd_mm_yy_hh_mm_ss"));
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd_mm_yy_hh_mm_ss_SSSSSS"));
         Document doc = new Document(String.format("{ "
                 + "\"id\": \"%s\", "
                 + "\"mypk\": \"%s\", "
