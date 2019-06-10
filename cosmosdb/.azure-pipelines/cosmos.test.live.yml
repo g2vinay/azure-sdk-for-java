@@ -18,6 +18,8 @@ jobs:
     pool:
       vmImage: 'vs2017-win2016'
 
+    timeoutInMinutes: 120
+
     #Your build pipeline references a secret variable named ‘ACCOUNT_HOST’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
     #Your build pipeline references a secret variable named ‘ACCOUNT_KEY’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
 
@@ -43,7 +45,7 @@ jobs:
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
-        PREFERRED_LOCATIONS: '["West US 2"]'
+        PREFERRED_LOCATIONS: '["East US 2"]'
       condition: succeededOrFailed()
 
     - task: CopyFiles@2
