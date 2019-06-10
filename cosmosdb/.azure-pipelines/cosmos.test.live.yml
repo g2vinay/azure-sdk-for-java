@@ -1,0 +1,65 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - cosmosdb/data-plane
+
+variables:
+  pomFile: './cosmosdb/data-plane/pom.xml'
+  DefaultOptions: '--batch-mode -Dmaven.wagon.http.pool=false'
+  LoggingOptions: '-Dorg.slf4j.simpleLogger.defaultLogLevel=error -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+
+jobs:
+
+  - job: 'Live Tests'
+
+    pool:
+      vmImage: 'vs2017-win2016'
+
+    #Your build pipeline references a secret variable named ‘ACCOUNT_HOST’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
+    #Your build pipeline references a secret variable named ‘ACCOUNT_KEY’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
+
+    steps:
+    - task: Maven@1
+      displayName: Build
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: 'package package'
+        options: '-DskipTests -Dgpg.skip'
+        publishJUnitResults: false
+        checkStyleRunAnalysis: true
+        pmdRunAnalysis: true
+        findBugsRunAnalysis: true
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Long Integration Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Dgpg.skip -e -Plong -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: '["Central US"]'
+      condition: succeededOrFailed()
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(build.sourcesdirectory)'
+        Contents: |
+         **/target/**
+         **/collectedArtifactsForRelease/**
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      continueOnError: true
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      continueOnError: true
+      condition: succeededOrFailed()
