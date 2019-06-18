@@ -96,39 +96,21 @@ jobs:
       continueOnError: true
       condition: succeededOrFailed()
 
-  - job: 'Cosmos'
+  - job: 'MultiMaster'
 
     timeoutInMinutes: 120
 
     strategy:
       matrix:
-        Multimaster_Multi_Region:
+        Multi_Region:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(ACCOUNT_HOST)
           CosmosAccountKey: $(ACCOUNT_KEY)
-          MultiMasterTaskEnabled: 'true'
-          ProtocolFlag: '["Https", "Tcp"]'
 
-        Multimaster_Single_Region:
+        Single_Region:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(MULTIMASTER_SINGLE_ACCOUNT_HOST)
           CosmosAccountKey: $(MULTIMASTER_SINGLE_ACCOUNT_KEY)
-          MultiMasterTaskEnabled: 'true'
-          ProtocolFlag: '["Https", "Tcp"]'
-
-        Session_Tcp_Single_Region:
-          OSVmImage: 'vs2017-win2016'
-          CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
-          CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
-          MultiMasterTaskEnabled: 'false'
-          ProtocolFlag: '["Tcp"]'
-
-        Session_Https_Single_Region:
-          OSVmImage: 'vs2017-win2016'
-          CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
-          CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
-          MultiMasterTaskEnabled: 'false'
-          ProtocolFlag: '["Https"]'
 
     pool:
       vmImage: $(OSVmImage)
@@ -141,7 +123,6 @@ jobs:
         goals: verify
         options: '-Pmulti-master -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
-      enabled: true
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
@@ -157,7 +138,6 @@ jobs:
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
-        PROTOCOLS: $(ProtocolFlag)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -170,7 +150,6 @@ jobs:
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
-        PROTOCOLS: $(ProtocolFlag)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -183,7 +162,6 @@ jobs:
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
-        PROTOCOLS: $(ProtocolFlag)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -195,6 +173,113 @@ jobs:
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: '["East US 2"]'
+      condition: succeededOrFailed()
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(build.sourcesdirectory)'
+        Contents: |
+         **/target/**
+         **/collectedArtifactsForRelease/**
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      continueOnError: true
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      continueOnError: true
+      condition: succeededOrFailed()
+
+  - job: 'Single_Region'
+
+    timeoutInMinutes: 120
+
+    strategy:
+      matrix:
+        Session_Tcp:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
+          CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
+          ProtocolFlag: '["Tcp"]'
+          Consistency: 'Session'
+
+        Session_Https:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
+          CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
+          ProtocolFlag: '["Https"]'
+          Consistency: 'Session'
+
+        Strong_Tcp:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(SINGLE_STRONG_ACCOUNT_HOST)
+          CosmosAccountKey: $(SINGLE_STRONG_ACCOUNT_KEY)
+          ProtocolFlag: '["Tcp"]'
+          Consistency: 'Strong'
+
+        Strong_Https:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(SINGLE_STRONG_ACCOUNT_HOST)
+          CosmosAccountKey: $(SINGLE_STRONG_ACCOUNT_KEY)
+          ProtocolFlag: '["Https"]'
+          Consistency: 'Strong'
+    pool:
+      vmImage: $(OSVmImage)
+
+    steps:
+    
+    - task: Maven@1
+      displayName: 'DirectHttps Integration Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Pdirect -DargLine="-DACCOUNT_DEFAULT_CONSISTENCY=Strong" -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: $(Consistency)
+        PREFERRED_LOCATIONS: '["East US 2"]'
+        PROTOCOLS: $(ProtocolFlag)
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Examples Integration Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Pexamples -DargLine="-DACCOUNT_DEFAULT_CONSISTENCY=Strong" -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: $(Consistency)
+        PREFERRED_LOCATIONS: '["East US 2"]'
+        PROTOCOLS: $(ProtocolFlag)
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Non Emulator Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Pnon-emulator -DargLine="-DACCOUNT_DEFAULT_CONSISTENCY=Strong" -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: $(Consistency)
+        PREFERRED_LOCATIONS: '["East US 2"]'
+        PROTOCOLS: $(ProtocolFlag)
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Fast Integration Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Pfast -DargLine="-DACCOUNT_DEFAULT_CONSISTENCY=Strong" -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: $(Consistency)
         PREFERRED_LOCATIONS: '["East US 2"]'
         PROTOCOLS: $(ProtocolFlag)
       condition: succeededOrFailed()
