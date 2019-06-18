@@ -30,23 +30,35 @@ jobs:
         findBugsRunAnalysis: true
       condition: succeededOrFailed()
 
-  - job: 'Long'
+  - job: 'Test'
 
     timeoutInMinutes: 120
 
     strategy:
       matrix:
-        MultiMaster_Multi_Region:
+        MultiMaster_Multi_Region_Long:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(ACCOUNT_HOST)
           CosmosAccountKey: $(ACCOUNT_KEY)
           Consistency: 'Session'
+          TestDisplayName: 'Long Integration Tests'
+          ProfileFlag: '-Plong'
 
-        Session_Single_Region:
+        Session_Single_Region_Long:
           OSVmImage: 'vs2017-win2016'
-          CosmosAccountHost: $(MULTIMASTER_SINGLE_ACCOUNT_HOST)
-          CosmosAccountKey: $(MULTIMASTER_SINGLE_ACCOUNT_KEY)
+          CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
+          CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
           Consistency: 'Session'
+          TestDisplayName: 'Long Integration Tests'
+          ProfileFlag: '-Plong'
+
+        Session_Single_Region_ReadMyWrites:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
+          CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
+          Consistency: 'Session'
+          TestDisplayName: 'ReadMyWrites Integration Tests'
+          ProfileFlag: '-Pe2e'
 
     pool:
       vmImage: $(OSVmImage)
@@ -55,11 +67,11 @@ jobs:
     #Your build pipeline references a secret variable named ‘ACCOUNT_KEY’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
     steps:
     - task: Maven@1
-      displayName: 'Long Integration Tests'
+      displayName: $(TestDisplayName)
       inputs:
         mavenPomFile: $(pomFile)
         goals: verify
-        options: '-Dgpg.skip -e -Plong -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        options: '-Dgpg.skip -e $(ProfileFlag) -DargLine="-DACCOUNT_DEFAULT_CONSISTENCY=Strong" -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: $(Consistency)
@@ -84,23 +96,40 @@ jobs:
       continueOnError: true
       condition: succeededOrFailed()
 
-
-  - job: 'Multimaster'
+  - job: 'Test'
 
     timeoutInMinutes: 120
 
     strategy:
       matrix:
-        Multi_Region:
+        Multimaster_Multi_Region:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(ACCOUNT_HOST)
           CosmosAccountKey: $(ACCOUNT_KEY)
+          MultiMasterTaskEnabled: true
+          ProtocolFlag: '["Https", "Tcp"]'
 
-        Single_Region:
+        Multimaster_Single_Region:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(MULTIMASTER_SINGLE_ACCOUNT_HOST)
           CosmosAccountKey: $(MULTIMASTER_SINGLE_ACCOUNT_KEY)
-          
+          MultiMasterTaskEnabled: true
+          ProtocolFlag: '["Https", "Tcp"]'
+
+        Session_Tcp_Single_Region:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
+          CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
+          MultiMasterTaskEnabled: false
+          ProtocolFlag: '["Tcp"]'
+
+        Session_Https_Single_Region:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
+          CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
+          MultiMasterTaskEnabled: false
+          ProtocolFlag: '["Https"]'
+
     pool:
       vmImage: $(OSVmImage)
 
@@ -112,6 +141,7 @@ jobs:
         goals: verify
         options: '-Pmulti-master -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
+      enabled: $(MultiMasterTaskEnabled)
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
@@ -127,6 +157,7 @@ jobs:
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
+        PROTOCOLS: $(ProtocolFlag)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -139,6 +170,7 @@ jobs:
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
+        PROTOCOLS: $(ProtocolFlag)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -151,6 +183,7 @@ jobs:
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
+        PROTOCOLS: $(ProtocolFlag)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -163,6 +196,7 @@ jobs:
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
+        PROTOCOLS: $(ProtocolFlag)
       condition: succeededOrFailed()
 
     - task: CopyFiles@2
