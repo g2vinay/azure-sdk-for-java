@@ -92,7 +92,7 @@ jobs:
       inputs:
         mavenPomFile: $(pomFile)
         goals: 'package package'
-        options: '-DskipTests - Dgpg.skip'
+        options: '-DskipTests -Dgpg.skip'
         publishJUnitResults: false
         checkStyleRunAnalysis: true
         pmdRunAnalysis: true
