@@ -13,7 +13,7 @@ variables:
 
 jobs:
 
-  - job: 'Live_Tests'
+  - job: 'Multimaster_Multi_Region_Long'
 
     pool:
       vmImage: 'vs2017-win2016'
@@ -42,6 +42,97 @@ jobs:
         mavenPomFile: $(pomFile)
         goals: verify
         options: '-Dgpg.skip -e -Plong -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: '["East US 2"]'
+      condition: succeededOrFailed()
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(build.sourcesdirectory)'
+        Contents: |
+         **/target/**
+         **/collectedArtifactsForRelease/**
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      continueOnError: true
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      continueOnError: true
+      condition: succeededOrFailed()
+
+
+  - job: 'Multimaster_Multi_Region'
+    pool:
+      vmImage: 'vs2017-win2016'
+
+    timeoutInMinutes: 120
+
+    steps:
+    - task: Maven@1
+      displayName: Build
+      inputs:
+        options: '-DskipTests - Dgpg.skip'
+        publishJUnitResults: false
+        checkStyleRunAnalysis: true
+        pmdRunAnalysis: true
+        findBugsRunAnalysis: true
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Multi-Master Integration Tests'
+      inputs:
+        goals: verify
+        options: '-Pmulti-master -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: '["East US 2"]'
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Fast Integration Tests'
+      inputs:
+        goals: verify
+        options: '-Pfast -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: '["East US 2"]'
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'DirectHttps Integration Tests'
+      inputs:
+        goals: verify
+        options: '-Pdirect -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: '["East US 2"]'
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Examples Integration Tests'
+      inputs:
+        goals: verify
+        options: '-Pexamples -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: '["East US 2"]'
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Non Emulator Tests'
+      inputs:
+        goals: verify
+        options: '-Pnon-emulator -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
