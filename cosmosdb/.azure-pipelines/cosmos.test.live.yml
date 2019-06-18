@@ -67,17 +67,31 @@ jobs:
       condition: succeededOrFailed()
 
 
-  - job: 'Multimaster_Multi_Region'
-    pool:
-      vmImage: 'vs2017-win2016'
+  - job: 'Multimaster'
 
     timeoutInMinutes: 120
+
+    strategy:
+      matrix:
+        Multi_Region:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(ACCOUNT_HOST)
+          CosmosAccountKey: $(ACCOUNT_KEY)
+
+        Single_Region:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(MULTIMASTER_SINGLE_ACCOUNT_HOST)
+          CosmosAccountKey: $(MULTIMASTER_SINGLE_ACCOUNT_KEY)
+          
+    pool:
+      vmImage: $(OSVmImage)
 
     steps:
     - task: Maven@1
       displayName: Build
       inputs:
         mavenPomFile: $(pomFile)
+        goals: 'package package'
         options: '-DskipTests - Dgpg.skip'
         publishJUnitResults: false
         checkStyleRunAnalysis: true
@@ -90,7 +104,7 @@ jobs:
       inputs:
         mavenPomFile: $(pomFile)
         goals: verify
-        options: '-Pmulti-master -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        options: '-Pmulti-master -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
@@ -102,7 +116,7 @@ jobs:
       inputs:
         mavenPomFile: $(pomFile)
         goals: verify
-        options: '-Pfast -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        options: '-Pfast -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
@@ -114,7 +128,7 @@ jobs:
       inputs:
         mavenPomFile: $(pomFile)
         goals: verify
-        options: '-Pdirect -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        options: '-Pdirect -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
@@ -126,7 +140,7 @@ jobs:
       inputs:
         mavenPomFile: $(pomFile)
         goals: verify
-        options: '-Pexamples -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        options: '-Pexamples -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
@@ -138,7 +152,7 @@ jobs:
       inputs:
         mavenPomFile: $(pomFile)
         goals: verify
-        options: '-Pnon-emulator -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+        options: '-Pnon-emulator -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
