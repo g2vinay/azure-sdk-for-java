@@ -12,7 +12,7 @@ variables:
   LoggingOptions: '-Dorg.slf4j.simpleLogger.defaultLogLevel=error -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
 
 jobs:
-  - job: 'Multimaster_Multi_Region_Long'
+  - job: 'Build'
 
     pool:
       vmImage: 'vs2017-win2016'
@@ -30,45 +30,59 @@ jobs:
         findBugsRunAnalysis: true
       condition: succeededOrFailed()
 
- # - job: 'Multimaster_Multi_Region_Long'
-#
- #   pool:
-  #    vmImage: 'vs2017-win2016'
-#
- #   timeoutInMinutes: 120
-#
- #   #Your build pipeline references a secret variable named ‘ACCOUNT_HOST’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
-  #  #Your build pipeline references a secret variable named ‘ACCOUNT_KEY’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
-#
- #  - task: Maven@1
-  #    displayName: 'Long Integration Tests'
-   #   inputs:
-    #    mavenPomFile: $(pomFile)
-     #   goals: verify
-      #  options: '-Dgpg.skip -e -Plong -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
-    #    testResultsFiles: '**/junitreports/TEST-*.xml'
-    #  env:
-    #    ACCOUNT_CONSISTENCY: 'Session'
-    #   PREFERRED_LOCATIONS: '["East US 2"]'
-    #  condition: succeededOrFailed()
+  - job: 'Long'
 
-   # - task: CopyFiles@2
-   #   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-   #   inputs:
-   #     SourceFolder: '$(build.sourcesdirectory)'
-   #     Contents: |
-   #      **/target/**
-   #      **/collectedArtifactsForRelease/**
-   #     TargetFolder: '$(build.artifactstagingdirectory)'
-   #   continueOnError: true
-   #   condition: succeededOrFailed()
+    timeoutInMinutes: 120
 
-   # - task: PublishBuildArtifacts@1
-   #   displayName: 'Publish Artifact: drop'
-   #   inputs:
-   #     PathtoPublish: '$(build.artifactstagingdirectory)'
-   #   continueOnError: true
-   #   condition: succeededOrFailed()
+    strategy:
+      matrix:
+        MultiMaster_Multi_Region:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(ACCOUNT_HOST)
+          CosmosAccountKey: $(ACCOUNT_KEY)
+          Consistency: 'Session'
+
+        Session_Single_Region:
+          OSVmImage: 'vs2017-win2016'
+          CosmosAccountHost: $(MULTIMASTER_SINGLE_ACCOUNT_HOST)
+          CosmosAccountKey: $(MULTIMASTER_SINGLE_ACCOUNT_KEY)
+          Consistency: 'Session'
+
+    pool:
+      vmImage: $(OSVmImage)
+        
+    #Your build pipeline references a secret variable named ‘ACCOUNT_HOST’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
+    #Your build pipeline references a secret variable named ‘ACCOUNT_KEY’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it secret. See https://go.microsoft.com/fwlink/?linkid=865972
+    steps:
+    - task: Maven@1
+      displayName: 'Long Integration Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Dgpg.skip -e -Plong -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: $(Consistency)
+        PREFERRED_LOCATIONS: '["East US 2"]'
+      condition: succeededOrFailed()
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(build.sourcesdirectory)'
+        Contents: |
+         **/target/**
+         **/collectedArtifactsForRelease/**
+        TargetFolder: '$(build.artifactstagingdirectory)'
+      continueOnError: true
+      condition: succeededOrFailed()
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      continueOnError: true
+      condition: succeededOrFailed()
 
 
   - job: 'Multimaster'
@@ -103,18 +117,6 @@ jobs:
         PREFERRED_LOCATIONS: '["East US 2"]'
       condition: succeededOrFailed()
 
-    #- task: Maven@1
-    #  displayName: 'Fast Integration Tests'
-    #  inputs:
-    #    mavenPomFile: $(pomFile)
-    #    goals: verify
-    #    options: '-Pfast -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
-    #    testResultsFiles: '**/junitreports/TEST-*.xml'
-    #  env:
-    #    ACCOUNT_CONSISTENCY: 'Session'
-    #    PREFERRED_LOCATIONS: '["East US 2"]'
-    #  condition: succeededOrFailed()
-
     - task: Maven@1
       displayName: 'DirectHttps Integration Tests'
       inputs:
@@ -145,6 +147,18 @@ jobs:
         mavenPomFile: $(pomFile)
         goals: verify
         options: '-Pnon-emulator -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: '["East US 2"]'
+      condition: succeededOrFailed()
+
+    - task: Maven@1
+      displayName: 'Fast Integration Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Pfast -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
