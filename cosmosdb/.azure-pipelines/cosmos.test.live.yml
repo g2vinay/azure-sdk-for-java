@@ -96,7 +96,7 @@ jobs:
       continueOnError: true
       condition: succeededOrFailed()
 
-  - job: 'Test'
+  - job: 'Cosmos'
 
     timeoutInMinutes: 120
 
