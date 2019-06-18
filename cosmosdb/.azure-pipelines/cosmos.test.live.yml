@@ -141,7 +141,7 @@ jobs:
         goals: verify
         options: '-Pmulti-master -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
-      enabled: $(MultiMasterTaskEnabled)
+      enabled: true
       env:
         ACCOUNT_CONSISTENCY: 'Session'
         PREFERRED_LOCATIONS: '["East US 2"]'
