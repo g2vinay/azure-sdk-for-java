@@ -106,28 +106,28 @@ jobs:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(ACCOUNT_HOST)
           CosmosAccountKey: $(ACCOUNT_KEY)
-          MultiMasterTaskEnabled: true
+          MultiMasterTaskEnabled: 'true'
           ProtocolFlag: '["Https", "Tcp"]'
 
         Multimaster_Single_Region:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(MULTIMASTER_SINGLE_ACCOUNT_HOST)
           CosmosAccountKey: $(MULTIMASTER_SINGLE_ACCOUNT_KEY)
-          MultiMasterTaskEnabled: true
+          MultiMasterTaskEnabled: 'true'
           ProtocolFlag: '["Https", "Tcp"]'
 
         Session_Tcp_Single_Region:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
           CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
-          MultiMasterTaskEnabled: false
+          MultiMasterTaskEnabled: 'false'
           ProtocolFlag: '["Tcp"]'
 
         Session_Https_Single_Region:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(SINGLE_SESSION_ACCOUNT_HOST)
           CosmosAccountKey: $(SINGLE_SESSION_ACCOUNT_KEY)
-          MultiMasterTaskEnabled: false
+          MultiMasterTaskEnabled: 'false'
           ProtocolFlag: '["Https"]'
 
     pool:
