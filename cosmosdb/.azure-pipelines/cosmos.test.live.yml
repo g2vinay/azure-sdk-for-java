@@ -43,6 +43,7 @@ jobs:
           Consistency: 'Session'
           TestDisplayName: 'Long Integration Tests'
           ProfileFlag: '-Plong'
+          PreferredLocations: '["East US 2"]'
 
         Session_Single_Region_Long:
           OSVmImage: 'vs2017-win2016'
@@ -51,6 +52,7 @@ jobs:
           Consistency: 'Session'
           TestDisplayName: 'Long Integration Tests'
           ProfileFlag: '-Plong'
+          PreferredLocations: null
 
         Session_Single_Region_ReadMyWrites:
           OSVmImage: 'vs2017-win2016'
@@ -59,6 +61,7 @@ jobs:
           Consistency: 'Session'
           TestDisplayName: 'ReadMyWrites Integration Tests'
           ProfileFlag: '-Pe2e'
+          PreferredLocations: null
 
         Strong_Single_Region_ReadMyWrites:
           OSVmImage: 'vs2017-win2016'
@@ -67,6 +70,7 @@ jobs:
           Consistency: 'Strong'
           TestDisplayName: 'ReadMyWrites Integration Tests'
           ProfileFlag: '-Pe2e'
+          PreferredLocations: null
 
     pool:
       vmImage: $(OSVmImage)
@@ -83,7 +87,7 @@ jobs:
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: $(Consistency)
-        PREFERRED_LOCATIONS: '["East US 2"]'
+        PREFERRED_LOCATIONS: $(PreferredLocations)
       condition: succeededOrFailed()
 
     - task: CopyFiles@2
@@ -114,11 +118,13 @@ jobs:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(ACCOUNT_HOST)
           CosmosAccountKey: $(ACCOUNT_KEY)
+          PreferredLocations: '["East US 2"]'
 
         Single_Region:
           OSVmImage: 'vs2017-win2016'
           CosmosAccountHost: $(MULTIMASTER_SINGLE_ACCOUNT_HOST)
           CosmosAccountKey: $(MULTIMASTER_SINGLE_ACCOUNT_KEY)
+          PreferredLocations: null
 
     pool:
       vmImage: $(OSVmImage)
@@ -133,7 +139,7 @@ jobs:
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
-        PREFERRED_LOCATIONS: '["East US 2"]'
+        PREFERRED_LOCATIONS: $(PreferredLocations)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -145,7 +151,7 @@ jobs:
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
-        PREFERRED_LOCATIONS: '["East US 2"]'
+        PREFERRED_LOCATIONS: $(PreferredLocations)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -157,7 +163,7 @@ jobs:
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
-        PREFERRED_LOCATIONS: '["East US 2"]'
+        PREFERRED_LOCATIONS: $(PreferredLocations)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -169,7 +175,7 @@ jobs:
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
-        PREFERRED_LOCATIONS: '["East US 2"]'
+        PREFERRED_LOCATIONS: $(PreferredLocations)
       condition: succeededOrFailed()
 
     - task: Maven@1
@@ -181,7 +187,7 @@ jobs:
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
-        PREFERRED_LOCATIONS: '["East US 2"]'
+        PREFERRED_LOCATIONS: $(PreferredLocations)
       condition: succeededOrFailed()
 
     - task: CopyFiles@2
