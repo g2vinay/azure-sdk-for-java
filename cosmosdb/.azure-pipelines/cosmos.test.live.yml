@@ -143,6 +143,18 @@ jobs:
       condition: succeededOrFailed()
 
     - task: Maven@1
+      displayName: 'Fast Integration Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Pfast -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: 'Session'
+        PREFERRED_LOCATIONS: $(PreferredLocations)
+      condition: succeededOrFailed()
+
+    - task: Maven@1
       displayName: 'DirectHttps Integration Tests'
       inputs:
         mavenPomFile: $(pomFile)
@@ -172,18 +184,6 @@ jobs:
         mavenPomFile: $(pomFile)
         goals: verify
         options: '-Pnon-emulator -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
-        testResultsFiles: '**/junitreports/TEST-*.xml'
-      env:
-        ACCOUNT_CONSISTENCY: 'Session'
-        PREFERRED_LOCATIONS: $(PreferredLocations)
-      condition: succeededOrFailed()
-
-    - task: Maven@1
-      displayName: 'Fast Integration Tests'
-      inputs:
-        mavenPomFile: $(pomFile)
-        goals: verify
-        options: '-Pfast -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: 'Session'
@@ -245,6 +245,17 @@ jobs:
       vmImage: $(OSVmImage)
 
     steps:
+    - task: Maven@1
+      displayName: 'Fast Integration Tests'
+      inputs:
+        mavenPomFile: $(pomFile)
+        goals: verify
+        options: '-Pfast -DargLine="-DACCOUNT_DEFAULT_CONSISTENCY=Strong" -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
+        testResultsFiles: '**/junitreports/TEST-*.xml'
+      env:
+        ACCOUNT_CONSISTENCY: $(Consistency)
+        PROTOCOLS: $(ProtocolFlag)
+      condition: succeededOrFailed()
     
     - task: Maven@1
       displayName: 'DirectHttps Integration Tests'
@@ -276,18 +287,6 @@ jobs:
         mavenPomFile: $(pomFile)
         goals: verify
         options: '-Pnon-emulator -DargLine="-DACCOUNT_DEFAULT_CONSISTENCY=Strong" -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
-        testResultsFiles: '**/junitreports/TEST-*.xml'
-      env:
-        ACCOUNT_CONSISTENCY: $(Consistency)
-        PROTOCOLS: $(ProtocolFlag)
-      condition: succeededOrFailed()
-
-    - task: Maven@1
-      displayName: 'Fast Integration Tests'
-      inputs:
-        mavenPomFile: $(pomFile)
-        goals: verify
-        options: '-Pfast -DargLine="-DACCOUNT_DEFAULT_CONSISTENCY=Strong" -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
         testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         ACCOUNT_CONSISTENCY: $(Consistency)
