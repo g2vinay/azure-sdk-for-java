@@ -11,7 +11,7 @@ jobs:
   #       ARM_CLIENTID: $(java-keyvault-test-arm-client-id)
   #       ARM_CLIENTKEY: $(java-keyvault-test-arm-client-key)
 
-  - template: ../../eng/pipelines/templates/jobs/archetype-sdk-tests-pre-sdk.yml
+  - template: ../eng/pipelines/templates/jobs/archetype-sdk-tests-pre-sdk.yml
     parameters:
       # When migrating use ServiceDirectory
       PomFilePath: './keyvault/client/pom.xml'
