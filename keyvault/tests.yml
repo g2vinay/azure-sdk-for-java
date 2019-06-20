@@ -1,7 +1,22 @@
 trigger: none
 
 jobs:
-    # When migrating change path to ../../eng/pipelines/templates/jobs/archetype-sdk-tests.yml
+
+  - job: 'Install_Azure_Core'
+    steps:
+      - task: Maven@3
+        displayName: 'Install Azure Core'
+        inputs:
+          mavenPomFile: ./core/azure-core/pom.xml
+          options: '$(DefaultOptions) -Dinclude-non-shipping-modules -DskipTests -Dgpg.skip  -Dmaven.javadoc.skip=true'
+          mavenOptions: '$(LoggingOptions)'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: false
+          goals: 'install'
+
+  # When migrating change path to ../../eng/pipelines/templates/jobs/archetype-sdk-tests.yml
   # - template: ../../eng/pipelines/templates/jobs/archetype-sdk-tests-pre-sdk.yml
   #   parameters:
   #     # When migrating use ServiceDirectory
