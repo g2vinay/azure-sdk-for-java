@@ -14,7 +14,7 @@ jobs:
       - task: Maven@3
         displayName: 'Install Azure Core'
         inputs:
-          mavenPomFile: ./core/azure-core/pom.xml
+          mavenPomFile: ./core/pom.xml
           options: '$(DefaultOptions) -Dinclude-non-shipping-modules -DskipTests -Dgpg.skip  -Dmaven.javadoc.skip=true'
           mavenOptions: '$(LoggingOptions)'
           javaHomeOption: 'JDKVersion'
