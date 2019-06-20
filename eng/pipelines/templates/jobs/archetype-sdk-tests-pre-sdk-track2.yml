@@ -1,10 +1,4 @@
 # Delete this after all tests.yml files have been migrated to use ServiceDirectory
-
-
-variables:
-  DefaultOptions: '--batch-mode -Dmaven.wagon.http.pool=false'
-  LoggingOptions: 
-
 parameters:
   PomFilePath: ''
   EnvVars: {}
