@@ -1,0 +1,23 @@
+trigger: none
+
+jobs:
+    # When migrating change path to ../../eng/pipelines/templates/jobs/archetype-sdk-tests.yml
+  # - template: ../../eng/pipelines/templates/jobs/archetype-sdk-tests-pre-sdk.yml
+  #   parameters:
+  #     # When migrating use ServiceDirectory
+  #     PomFilePath: './keyvault/data-plane/pom.xml'
+  #     EnvVars:
+  #       AZURE_TEST_MODE: RECORD
+  #       ARM_CLIENTID: $(java-keyvault-test-arm-client-id)
+  #       ARM_CLIENTKEY: $(java-keyvault-test-arm-client-key)
+
+  - template: ../../eng/pipelines/templates/jobs/archetype-sdk-tests-pre-sdk.yml
+    parameters:
+      # When migrating use ServiceDirectory
+      PomFilePath: './keyvault/client/pom.xml'
+      EnvVars:
+        AZURE_TEST_MODE: RECORD
+        ARM_CLIENTID: $(java-keyvault-test-arm-client-id)
+        ARM_CLIENTKEY: $(java-keyvault-test-arm-client-key)
+        MICROSOFT_AD_TENANT_ID: $(microsoft-active-directory-tenant-id)
+        AZURE_KEYVAULT_ENDPOINT: $(java-azure-keyvault-sdk-endpoint)
