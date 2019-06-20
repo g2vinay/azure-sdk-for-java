@@ -19,7 +19,7 @@ jobs:
       PomFilePath: './keyvault/client/pom.xml'
       EnvVars:
         AZURE_TEST_MODE: RECORD
-        ARM_CLIENTID: $(java-keyvault-test-arm-client-id)
-        ARM_CLIENTKEY: $(java-keyvault-test-arm-client-key)
+        ARM_CLIENT_ID: $(java-keyvault-test-arm-client-id)
+        ARM_CLIENT_KEY: $(java-keyvault-test-arm-client-key)
         MICROSOFT_AD_TENANT_ID: $(microsoft-active-directory-tenant-id)
         AZURE_KEYVAULT_ENDPOINT: $(java-azure-keyvault-sdk-endpoint)
