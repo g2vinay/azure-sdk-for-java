@@ -29,6 +29,7 @@ jobs:
   - template: ../eng/pipelines/templates/jobs/archetype-sdk-tests-pre-sdk.yml
     parameters:
       # When migrating use ServiceDirectory
+      JobName: 'Keyvault Client Live Test'
       PomFilePath: './keyvault/client/pom.xml'
       EnvVars:
         AZURE_TEST_MODE: RECORD
