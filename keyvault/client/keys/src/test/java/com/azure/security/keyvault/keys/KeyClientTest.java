@@ -3,18 +3,24 @@
 
 package com.azure.security.keyvault.keys;
 
+import com.azure.core.credentials.AccessToken;
 import com.azure.core.exception.ResourceModifiedException;
 import com.azure.core.exception.ResourceNotFoundException;
 import com.azure.core.http.HttpClient;
 import com.azure.core.http.policy.HttpLogDetailLevel;
 import com.azure.core.http.policy.RetryPolicy;
+import com.azure.identity.credential.DefaultAzureCredential;
 import com.azure.security.keyvault.keys.models.DeletedKey;
 import com.azure.security.keyvault.keys.models.Key;
 import com.azure.security.keyvault.keys.models.KeyBase;
 import com.azure.security.keyvault.keys.models.KeyCreateOptions;
 import com.azure.security.keyvault.keys.models.webkey.KeyType;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,21 +38,21 @@ public class KeyClientTest extends KeyClientTestBase {
         beforeTestSetup();
 
         if (interceptorManager.isPlaybackMode()) {
-            client = clientSetup(credentials -> KeyClient.builder()
-                .credential(credentials)
-                .endpoint(getEndpoint())
-                .httpClient(interceptorManager.getPlaybackClient())
-                .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
-                .build());
+            client = KeyClient.builder()
+                    .credential(resource -> Mono.just(new AccessToken("Some fake token", OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofMinutes(30)))))
+                    .endpoint(getEndpoint())
+                    .httpClient(interceptorManager.getPlaybackClient())
+                    .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
+                    .build();
         } else {
-            client = clientSetup(credentials -> KeyClient.builder()
-                .credential(credentials)
-                .endpoint(getEndpoint())
-                .httpClient(HttpClient.createDefault().wiretap(true))
-                .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
-                .addPolicy(interceptorManager.getRecordPolicy())
-                .addPolicy(new RetryPolicy())
-                .build());
+            client = KeyClient.builder()
+                    .credential(new DefaultAzureCredential())
+                    .endpoint(getEndpoint())
+                    .httpClient(HttpClient.createDefault().wiretap(true))
+                    .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
+                    .addPolicy(interceptorManager.getRecordPolicy())
+                    .addPolicy(new RetryPolicy())
+                    .build();
         }
     }
 
