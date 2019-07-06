@@ -39,21 +39,23 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
         beforeTestSetup();
 
         if (interceptorManager.isPlaybackMode()) {
-            client = KeyAsyncClient.builder()
+            StepVerifier.create(  wow -> {          client = KeyAsyncClient.builder()
                     .credential(resource -> Mono.just(new AccessToken("Some fake token", OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofMinutes(30)))))
                     .endpoint(getEndpoint())
                     .httpClient(interceptorManager.getPlaybackClient())
                     .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
-                    .build();
+                    .build(); } ).verifyComplete();
+
+
         } else {
-            client = KeyAsyncClient.builder()
+            StepVerifier.create(wow -> { client = KeyAsyncClient.builder()
                     .credential(new DefaultAzureCredential())
                     .endpoint(getEndpoint())
                     .httpClient(HttpClient.createDefault().wiretap(true))
                     .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
                     .addPolicy(interceptorManager.getRecordPolicy())
                     .addPolicy(new RetryPolicy())
-                    .build();
+                    .build(); } ).verifyComplete();
         }
     }
 

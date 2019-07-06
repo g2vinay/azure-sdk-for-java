@@ -17,6 +17,7 @@ import com.azure.security.keyvault.keys.models.KeyCreateOptions;
 import com.azure.security.keyvault.keys.models.webkey.KeyType;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -38,21 +39,22 @@ public class KeyClientTest extends KeyClientTestBase {
         beforeTestSetup();
 
         if (interceptorManager.isPlaybackMode()) {
-            client = KeyClient.builder()
+            StepVerifier.create(wow -> {       client = KeyClient.builder()
                     .credential(resource -> Mono.just(new AccessToken("Some fake token", OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofMinutes(30)))))
                     .endpoint(getEndpoint())
                     .httpClient(interceptorManager.getPlaybackClient())
                     .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
-                    .build();
+                    .build(); } ).verifyComplete();
+
         } else {
-            client = KeyClient.builder()
+            StepVerifier.create(  wow -> {       client = KeyClient.builder()
                     .credential(new DefaultAzureCredential())
                     .endpoint(getEndpoint())
                     .httpClient(HttpClient.createDefault().wiretap(true))
                     .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
                     .addPolicy(interceptorManager.getRecordPolicy())
                     .addPolicy(new RetryPolicy())
-                    .build();
+                    .build(); } ).verifyComplete();
         }
     }
 
