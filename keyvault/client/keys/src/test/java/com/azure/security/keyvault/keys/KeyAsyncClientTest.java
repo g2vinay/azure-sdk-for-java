@@ -73,6 +73,9 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that we can create keys when value is not null or an empty string.
      */
     public void setKeyNullType() {
+        if(client == null){
+            System.out.println("Client is null");
+        }
         setKeyEmptyValueRunner((key) -> {
 
             StepVerifier.create(client.createKey(key))
@@ -92,6 +95,9 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a key is able to be updated when it exists.
      */
     public void updateKey() {
+        if(client == null){
+            System.out.println("Client is null");
+        }
         updateKeyRunner((original, updated) -> {
             StepVerifier.create(client.createKey(original))
                     .assertNext(response -> assertKeyEquals(original, response))
@@ -114,6 +120,9 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a key is not able to be updated when it is disabled. 403 error is expected.
      */
     public void updateDisabledKey() {
+        if(client == null){
+            System.out.println("Client is null");
+        }
         updateDisabledKeyRunner((original, updated) -> {
             StepVerifier.create(client.createKey(original))
                     .assertNext(response -> assertKeyEquals(original, response))
@@ -137,6 +146,9 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an existing key can be retrieved.
      */
     public void getKey() {
+        if(client == null){
+            System.out.println("Client is null");
+        }
         getKeyRunner((original) -> {
             client.createKey(original);
             StepVerifier.create(client.getKey(original.name()))
@@ -149,6 +161,9 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a specific version of the key can be retrieved.
      */
     public void getKeySpecificVersion() {
+        if(client == null){
+            System.out.println("Client is null");
+        }
         getKeySpecificVersionRunner((key, keyWithNewVal) -> {
             final Key keyVersionOne = client.createKey(key).block().value();
             final Key keyVersionTwo = client.createKey(keyWithNewVal).block().value();
@@ -167,6 +182,9 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an attempt to get a non-existing key throws an error.
      */
     public void getKeyNotFound() {
+        if(client == null){
+            System.out.println("Client is null");
+        }
         StepVerifier.create(client.getKey("non-existing"))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceNotFoundException.class, HttpResponseStatus.NOT_FOUND.code()));
     }
@@ -176,6 +194,9 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an existing key can be deleted.
      */
     public void deleteKey() {
+        if(client == null){
+            System.out.println("Client is null");
+        }
         deleteKeyRunner((keyToDelete) -> {
             StepVerifier.create(client.createKey(keyToDelete))
                     .assertNext(keyResponse -> {
@@ -201,6 +222,9 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
     }
 
     public void deleteKeyNotFound() {
+        if(client == null){
+            System.out.println("Client is null");
+        }
         StepVerifier.create(client.deleteKey("non-existing"))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceNotFoundException.class, HttpResponseStatus.NOT_FOUND.code()));
     }
@@ -418,10 +442,13 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
             String keyName = null;
             for (KeyCreateOptions key : keyVersions) {
                 keyName = key.name();
-                client.createKey(key).subscribe(keyResponse -> assertKeyEquals(key, keyResponse.value()));
-                sleepInRecordMode(1000);
+                StepVerifier.create(client.createKey(key))
+                        .assertNext(keyResponse -> {
+                            assertKeyEquals(key, keyResponse.value());
+                        }).verifyComplete();
             }
-            sleep(30000);
+
+            sleep(10000);
             client.listKeyVersions(keyName).subscribe(output::add);
             sleep(30000);
 
@@ -452,10 +479,12 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
             HashMap<String, KeyCreateOptions> keysToList = keys;
             List<KeyBase> output = new ArrayList<>();
             for (KeyCreateOptions key : keysToList.values()) {
-                client.createKey(key).subscribe(keyResponse -> assertKeyEquals(key, keyResponse.value()));
-                sleepInRecordMode(1000);
+                StepVerifier.create(client.createKey(key))
+                        .assertNext(keyResponse -> {
+                            assertKeyEquals(key, keyResponse.value());
+                        }).verifyComplete();
             }
-            sleep(30000);
+            sleep(10000);
             client.listKeys().subscribe(output::add);
             sleep(30000);
 

@@ -313,7 +313,8 @@ public abstract class SecretClientTestBase extends TestBase {
     public String getEndpoint() {
         final String endpoint = interceptorManager.isPlaybackMode()
                 ? "http://localhost:8080"
-                : System.getenv("AZURE_KEYVAULT_ENDPOINT");
+                : "https://cameravault.vault.azure.net";
+               // : System.getenv("AZURE_KEYVAULT_ENDPOINT");
         Objects.requireNonNull(endpoint);
         return endpoint;
     }
