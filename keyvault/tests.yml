@@ -16,6 +16,7 @@ jobs:
     parameters:
       # When migrating use ServiceDirectory
       JobName: 'Keyvault_Client_Live_Test'
+      OsName: 'macOS-10.13'
       PomFilePath: './keyvault/client/pom.xml'
       EnvVars:
         AZURE_TEST_MODE: RECORD

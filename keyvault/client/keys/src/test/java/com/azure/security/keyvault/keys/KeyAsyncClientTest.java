@@ -39,23 +39,21 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
         beforeTestSetup();
 
         if (interceptorManager.isPlaybackMode()) {
-            StepVerifier.create(  wow -> {          client = KeyAsyncClient.builder()
+            client = KeyAsyncClient.builder()
                     .credential(resource -> Mono.just(new AccessToken("Some fake token", OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofMinutes(30)))))
                     .endpoint(getEndpoint())
                     .httpClient(interceptorManager.getPlaybackClient())
                     .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
-                    .build(); } ).verifyComplete();
-
-
+                    .build();
         } else {
-            StepVerifier.create(wow -> { client = KeyAsyncClient.builder()
+            client = KeyAsyncClient.builder()
                     .credential(new DefaultAzureCredential())
                     .endpoint(getEndpoint())
                     .httpClient(HttpClient.createDefault().wiretap(true))
                     .httpLogDetailLevel(HttpLogDetailLevel.BODY_AND_HEADERS)
                     .addPolicy(interceptorManager.getRecordPolicy())
                     .addPolicy(new RetryPolicy())
-                    .build(); } ).verifyComplete();
+                    .build();
         }
     }
 
@@ -230,9 +228,6 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
     }
 
     public void deleteKeyNotFound() {
-        if(client == null){
-            System.out.println("Client is null");
-        }
         StepVerifier.create(client.deleteKey("non-existing"))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceNotFoundException.class, HttpResponseStatus.NOT_FOUND.code()));
     }
