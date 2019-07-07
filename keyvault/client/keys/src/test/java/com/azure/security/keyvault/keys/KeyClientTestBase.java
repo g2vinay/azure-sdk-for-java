@@ -12,11 +12,15 @@ import com.azure.identity.credential.DefaultAzureCredential;
 import com.azure.security.keyvault.keys.models.Key;
 import com.azure.security.keyvault.keys.models.KeyCreateOptions;
 import com.azure.security.keyvault.keys.models.webkey.KeyType;
+import com.microsoft.aad.adal4j.AuthenticationContext;
+import com.microsoft.aad.adal4j.AuthenticationResult;
+import com.microsoft.aad.adal4j.ClientCredential;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import reactor.core.publisher.Mono;
 
+import java.net.MalformedURLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -25,6 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -55,18 +63,61 @@ public abstract class KeyClientTestBase extends TestBase {
                 ? "http://localhost:8080"
                 : System.getenv("AZURE_KEYVAULT_ENDPOINT");
 
-        TokenCredential credential;
+        final String tenantId = interceptorManager.isPlaybackMode()
+                ? "some-tenant-id"
+                : System.getenv("AZURE_TENANT_ID");
 
-        if (interceptorManager.isPlaybackMode()) {
-            credential = resource -> Mono.just(new AccessToken("Some fake token", OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofMinutes(30))));
-        } else {
-            credential = new DefaultAzureCredential();
-        }
+        final String clientId = interceptorManager.isPlaybackMode()
+                ? "some-client-id"
+                : System.getenv("AZURE_CLIENT_ID");
+
+        final String clientKey = interceptorManager.isPlaybackMode()
+                ? "http://localhost:8080"
+                : System.getenv("AZURE_CLIENT_SECRET");
+
+        Objects.requireNonNull(endpoint, "AZURE_KEYVAULT_ENDPOINT expected to be set.");
+        Objects.requireNonNull(clientId, "AZURE_CLIENT_ID expected to be set.");
+        Objects.requireNonNull(clientKey, "AZURE_CLIENT_SECRET expected to be set.");
+        Objects.requireNonNull(tenantId, "AZURE_TENANT_ID expected to be set.");
+
+        TokenCredential credential = resource -> {
+            if (interceptorManager.isPlaybackMode()) {
+                return Mono.just(new AccessToken("Some fake token", OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofMinutes(30))));
+            }
+
+            try {
+                return Mono.just(getAccessToken(tenantId, clientId, clientKey));
+            } catch (Exception e) {
+                return Mono.error(e);
+            }
+        };
 
         T client;
+        String authority = "https://login.microsoftonline.com/{tenantId}";
+        String auth = authority.replace("{tenantId}", tenantId);
         client = clientBuilder.apply(credential);
 
         return Objects.requireNonNull(client);
+    }
+
+    private AccessToken getAccessToken(String tenantId, String clientId, String clientKey) throws MalformedURLException, ExecutionException, InterruptedException {
+        String authority = "https://login.microsoftonline.com/{tenantId}";
+        String auth = authority.replace("{tenantId}", tenantId);
+
+        ExecutorService service = Executors.newFixedThreadPool(1);
+        AuthenticationContext context = new AuthenticationContext(auth, true, service);
+        // Acquire Token
+        Future<AuthenticationResult> result = context.acquireToken(
+                "https://vault.azure.net",
+                new ClientCredential(clientId, clientKey),
+                null
+        );
+
+        final AuthenticationResult authenticationResult = result.get();
+        final String token = authenticationResult.getAccessToken();
+        final OffsetDateTime expiresOn = authenticationResult.getExpiresOnDate().toInstant().atOffset(ZoneOffset.UTC);
+
+        return new AccessToken(token, expiresOn);
     }
 
     @Test
