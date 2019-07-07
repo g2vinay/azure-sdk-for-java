@@ -9,6 +9,7 @@ import com.azure.core.exception.ResourceNotFoundException;
 import com.azure.core.http.HttpClient;
 import com.azure.core.http.policy.HttpLogDetailLevel;
 import com.azure.core.http.policy.RetryPolicy;
+import com.azure.core.util.configuration.ConfigurationManager;
 import com.azure.identity.credential.DefaultAzureCredential;
 import com.azure.security.keyvault.keys.models.DeletedKey;
 import com.azure.security.keyvault.keys.models.Key;
@@ -37,7 +38,13 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
     @Override
     protected void beforeTest() {
         beforeTestSetup();
+        ConfigurationManager.getConfiguration().clone();
 
+        client = getClient();
+    }
+
+    private KeyAsyncClient getClient(){
+        KeyAsyncClient client;
         if (interceptorManager.isPlaybackMode()) {
             client = KeyAsyncClient.builder()
                     .credential(resource -> Mono.just(new AccessToken("Some fake token", OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofMinutes(30)))))
@@ -55,12 +62,14 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
                     .addPolicy(new RetryPolicy())
                     .build();
         }
+        return client;
     }
 
     /**
      * Tests that a key can be created in the key vault.
      */
     public void setKey() {
+        KeyAsyncClient client = getClient();
 
         setKeyRunner((expected) -> StepVerifier.create(client.createKey(expected))
                 .assertNext(response -> assertKeyEquals(expected, response))
@@ -71,6 +80,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that we cannot create a key when the key is an empty string.
      */
     public void setKeyEmptyName() {
+        KeyAsyncClient client = getClient();
+
         StepVerifier.create(client.createKey("", KeyType.RSA))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceModifiedException.class, HttpResponseStatus.BAD_REQUEST.code()));
     }
@@ -79,6 +90,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that we can create keys when value is not null or an empty string.
      */
     public void setKeyNullType() {
+        KeyAsyncClient client = getClient();
+
         if(client == null){
             System.out.println("Client is null");
         }
@@ -94,6 +107,7 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Verifies that an exception is thrown when null key object is passed for creation.
      */
     public void setKeyNull() {
+        KeyAsyncClient client = getClient();
         assertRunnableThrowsException(() -> client.createKey(null), NullPointerException.class);
     }
 
@@ -101,6 +115,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a key is able to be updated when it exists.
      */
     public void updateKey() {
+        KeyAsyncClient client = getClient();
+
         if(client == null){
             System.out.println("Client is null");
         }
@@ -126,6 +142,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a key is not able to be updated when it is disabled. 403 error is expected.
      */
     public void updateDisabledKey() {
+        KeyAsyncClient client = getClient();
+
         if(client == null){
             System.out.println("Client is null");
         }
@@ -152,6 +170,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an existing key can be retrieved.
      */
     public void getKey() {
+        KeyAsyncClient client = getClient();
+
         if(client == null){
             System.out.println("Client is null");
         }
@@ -167,6 +187,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a specific version of the key can be retrieved.
      */
     public void getKeySpecificVersion() {
+        KeyAsyncClient client = getClient();
+
         if(client == null){
             System.out.println("Client is null");
         }
@@ -188,6 +210,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an attempt to get a non-existing key throws an error.
      */
     public void getKeyNotFound() {
+        KeyAsyncClient client = getClient();
+
         if(client == null){
             System.out.println("Client is null");
         }
@@ -200,6 +224,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an existing key can be deleted.
      */
     public void deleteKey() {
+        KeyAsyncClient client = getClient();
+
         if(client == null){
             System.out.println("Client is null");
         }
@@ -228,6 +254,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
     }
 
     public void deleteKeyNotFound() {
+        KeyAsyncClient client = getClient();
+
         StepVerifier.create(client.deleteKey("non-existing"))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceNotFoundException.class, HttpResponseStatus.NOT_FOUND.code()));
     }
@@ -236,6 +264,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an attempt to retrieve a non existing deleted key throws an error on a soft-delete enabled vault.
      */
     public void getDeletedKeyNotFound() {
+        KeyAsyncClient client = getClient();
+
         StepVerifier.create(client.getDeletedKey("non-existing"))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceNotFoundException.class, HttpResponseStatus.NOT_FOUND.code()));
     }
@@ -244,6 +274,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a deleted key can be recovered on a soft-delete enabled vault.
      */
     public void recoverDeletedKey() {
+        KeyAsyncClient client = getClient();
+
         recoverDeletedKeyRunner((keyToDeleteAndRecover) -> {
             StepVerifier.create(client.createKey(keyToDeleteAndRecover))
                     .assertNext(keyResponse -> {
@@ -271,6 +303,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an attempt to recover a non existing deleted key throws an error on a soft-delete enabled vault.
      */
     public void recoverDeletedKeyNotFound() {
+        KeyAsyncClient client = getClient();
+
         StepVerifier.create(client.recoverDeletedKey("non-existing"))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceNotFoundException.class, HttpResponseStatus.NOT_FOUND.code()));
     }
@@ -279,6 +313,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a key can be backed up in the key vault.
      */
     public void backupKey() {
+        KeyAsyncClient client = getClient();
+
         backupKeyRunner((keyToBackup) -> {
             StepVerifier.create(client.createKey(keyToBackup))
                     .assertNext(keyResponse -> {
@@ -298,6 +334,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an attempt to backup a non existing key throws an error.
      */
     public void backupKeyNotFound() {
+        KeyAsyncClient client = getClient();
+
         StepVerifier.create(client.backupKey("non-existing"))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceNotFoundException.class, HttpResponseStatus.NOT_FOUND.code()));
     }
@@ -306,6 +344,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a key can be backed up in the key vault.
      */
     public void restoreKey() {
+        KeyAsyncClient client = getClient();
+
         restoreKeyRunner((keyToBackupAndRestore) -> {
             StepVerifier.create(client.createKey(keyToBackupAndRestore))
                     .assertNext(keyResponse -> {
@@ -342,6 +382,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that an attempt to restore a key from malformed backup bytes throws an error.
      */
     public void restoreKeyFromMalformedBackup() {
+        KeyAsyncClient client = getClient();
+
         byte[] keyBackupBytes = "non-existing".getBytes();
         StepVerifier.create(client.restoreKey(keyBackupBytes))
                 .verifyErrorSatisfies(ex -> assertRestException(ex, ResourceModifiedException.class, HttpResponseStatus.BAD_REQUEST.code()));
@@ -351,6 +393,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that a deleted key can be retrieved on a soft-delete enabled vault.
      */
     public void getDeletedKey() {
+        KeyAsyncClient client = getClient();
+
         getDeletedKeyRunner((keyToDeleteAndGet) -> {
 
             StepVerifier.create(client.createKey(keyToDeleteAndGet))
@@ -389,6 +433,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      */
     @Override
     public void listDeletedKeys() {
+        KeyAsyncClient client = getClient();
+
         listDeletedKeysRunner((keys) -> {
 
             HashMap<String, KeyCreateOptions> keysToDelete = keys;
@@ -439,6 +485,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      */
     @Override
     public void listKeyVersions() {
+        KeyAsyncClient client = getClient();
+
         listKeyVersionsRunner((keys) -> {
             List<KeyCreateOptions> keyVersions = keys;
             List<KeyBase> output = new ArrayList<>();
@@ -478,6 +526,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
      * Tests that keys can be listed in the key vault.
      */
     public void listKeys() {
+        KeyAsyncClient client = getClient();
+
         listKeysRunner((keys) -> {
             HashMap<String, KeyCreateOptions> keysToList = keys;
             List<KeyBase> output = new ArrayList<>();
@@ -504,6 +554,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
     }
 
     private DeletedKey pollOnKeyDeletion(String keyName) {
+        KeyAsyncClient client = getClient();
+
         int pendingPollCount = 0;
         while (pendingPollCount < 30) {
             DeletedKey deletedKey = null;
@@ -524,6 +576,8 @@ public class KeyAsyncClientTest extends KeyClientTestBase {
     }
 
     private DeletedKey pollOnKeyPurge(String keyName) {
+        KeyAsyncClient client = getClient();
+
         int pendingPollCount = 0;
         while (pendingPollCount < 10) {
             DeletedKey deletedKey = null;

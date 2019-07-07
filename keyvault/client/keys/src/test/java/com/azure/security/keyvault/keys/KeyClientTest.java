@@ -9,6 +9,7 @@ import com.azure.core.exception.ResourceNotFoundException;
 import com.azure.core.http.HttpClient;
 import com.azure.core.http.policy.HttpLogDetailLevel;
 import com.azure.core.http.policy.RetryPolicy;
+import com.azure.core.util.configuration.ConfigurationManager;
 import com.azure.identity.credential.DefaultAzureCredential;
 import com.azure.security.keyvault.keys.models.DeletedKey;
 import com.azure.security.keyvault.keys.models.Key;
@@ -36,6 +37,8 @@ public class KeyClientTest extends KeyClientTestBase {
     @Override
     protected void beforeTest() {
         beforeTestSetup();
+
+        ConfigurationManager.getConfiguration().clone();
 
         if (interceptorManager.isPlaybackMode()) {
             client = KeyClient.builder()
