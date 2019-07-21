@@ -16,9 +16,10 @@ jobs:
 
   - job: 'Emulator'
 
-    timeoutInMinutes: 120
+    timeoutInMinutes: 60
     continueOnError: false
     strategy:
+      maxParallel: 3
       matrix:
         Tcp_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
@@ -28,21 +29,20 @@ jobs:
           ProtocolFlag: '["Tcp"]'
           Consistency: '["Strong", "Session"]'
 
-        Https_Integration_Tests_Java8:
-          OSVmImage: 'vs2017-win2016'
-          JavaVersion: '1.8'
-          ProfileFlag: '-Pemulator'
-          TestDisplayName: 'Emulator only Integration Tests'
-          ProtocolFlag: '["Https"]'
-          Consistency: '["Strong", "Session"]'
-
-
         Examples_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
           JavaVersion: '1.8'
           ProfileFlag: '-Pexamples'
           TestDisplayName: 'Examples Integration Tests'
           ProtocolFlag: '["Https", "Tcp"]'
+          Consistency: '["Strong", "Session"]'
+
+        Https_Integration_Tests_Java8:
+          OSVmImage: 'vs2017-win2016'
+          JavaVersion: '1.8'
+          ProfileFlag: '-Pemulator'
+          TestDisplayName: 'Emulator only Integration Tests'
+          ProtocolFlag: '["Https"]'
           Consistency: '["Strong", "Session"]'
 
     pool:
@@ -127,7 +127,7 @@ jobs:
         inputs:
          mavenPomFile: $(pomFile)
          goals: 'package verify'
-         options: '$(ProfileFlag) -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
+         options: '$(ProfileFlag) -Dsurefire.rerunFailingTestsCount=3 -Dgpg.skip -DargLine="-DACCOUNT_HOST=https://localhost:8081/"'
          testResultsFiles: '**/junitreports/TEST-*.xml'
          mavenAuthenticateFeed: true
          jdkVersionOption: $(JavaVersion)
