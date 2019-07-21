@@ -19,7 +19,7 @@ jobs:
     timeoutInMinutes: 60
     continueOnError: false
     strategy:
-      maxParallel: 3
+      maxParallel: 2
       matrix:
         Tcp_Integration_Tests_Java8:
           OSVmImage: 'vs2017-win2016'
