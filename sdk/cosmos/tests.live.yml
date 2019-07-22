@@ -174,7 +174,7 @@ jobs:
       inputs:
        mavenPomFile: $(pomFile)
        goals: verify
-       options: '$(ProfileFlag) -Dgpg.skip -DACCOUNT_HOST=$(ACCOUNT_HOST) -DACCOUNT_KEY=$(ACCOUNT_KEY)'
+       options: '$(ProfileFlag) -Dgpg.skip -DACCOUNT_HOST=$(CosmosAccountHost) -DACCOUNT_KEY=$(CosmosAccountKey)'
        testResultsFiles: '**/junitreports/TEST-*.xml'
       env:
         DESIRED_CONSISTENCIES: $(Consistency)
