@@ -326,6 +326,13 @@ jobs:
           ProtocolFlag: '["Tcp"]'
           Consistency: '["Strong", "Session"]'
 
+        Session_Tcp:
+          OSVmImage: 'macOS-10.13'
+          CosmosAccountHost: $(java-cosmos-session-singleregion-one-host)
+          CosmosAccountKey: $(java-cosmos-session-singleregion-one-key)
+          ProtocolFlag: '["Tcp"]'
+          Consistency: '["Session"]'
+
         Strong_Https:
          OSVmImage: 'macOS-10.13'
          CosmosAccountHost: $(java-cosmos-strong-singleregion-host)
@@ -335,17 +342,10 @@ jobs:
 
         Session_Tcp:
           OSVmImage: 'macOS-10.13'
-          CosmosAccountHost: $(java-cosmos-session-singleregion-host)
-          CosmosAccountKey: $(java-cosmos-session-singleregion-key)
+          CosmosAccountHost: $(java-cosmos-session-singleregion-one-host)
+          CosmosAccountKey: $(java-cosmos-session-singleregion-one-key)
           ProtocolFlag: '["Tcp"]'
           Consistency: '["Session"]'
-
-        Session_Https:
-         OSVmImage: 'macOS-10.13'
-         CosmosAccountHost: $(java-cosmos-session-singleregion-host)
-         CosmosAccountKey: $(java-cosmos-session-singleregion-key)
-         ProtocolFlag: '["Https"]'
-         Consistency: '["Session"]'
     pool:
       vmImage: $(OSVmImage)
 
