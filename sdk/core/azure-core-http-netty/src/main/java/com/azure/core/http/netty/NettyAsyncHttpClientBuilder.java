@@ -5,6 +5,7 @@ package com.azure.core.http.netty;
 
 import com.azure.core.http.ProxyOptions;
 import com.azure.core.util.logging.ClientLogger;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.ProxyProvider;
@@ -26,6 +27,7 @@ public class NettyAsyncHttpClientBuilder {
     private boolean enableWiretap;
     private int port = 80;
     private NioEventLoopGroup nioEventLoopGroup;
+    private EpollEventLoopGroup epollEventLoopGroup;
 
     /**
      * Creates a new builder instance, where a builder is capable of generating multiple instances of
@@ -46,7 +48,9 @@ public class NettyAsyncHttpClientBuilder {
             .port(port)
             .wiretap(enableWiretap)
             .tcpConfiguration(tcpConfig -> {
-                if (nioEventLoopGroup != null) {
+                if (epollEventLoopGroup != null) {
+                    tcpConfig = tcpConfig.runOn(epollEventLoopGroup);
+                } else if (nioEventLoopGroup != null) {
                     tcpConfig = tcpConfig.runOn(nioEventLoopGroup);
                 }
 
@@ -121,6 +125,11 @@ public class NettyAsyncHttpClientBuilder {
      */
     public NettyAsyncHttpClientBuilder nioEventLoopGroup(NioEventLoopGroup nioEventLoopGroup) {
         this.nioEventLoopGroup = nioEventLoopGroup;
+        return this;
+    }
+
+    public NettyAsyncHttpClientBuilder epollEventLoopGroup(EpollEventLoopGroup epollEventLoopGroup) {
+        this.epollEventLoopGroup = epollEventLoopGroup;
         return this;
     }
 }

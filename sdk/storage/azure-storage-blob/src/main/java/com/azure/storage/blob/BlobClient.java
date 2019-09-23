@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.nio.file.FileAlreadyExistsException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -377,7 +379,9 @@ public class BlobClient {
             .flatMapMany(res -> res.getValue()
                 .doOnNext(bf -> {
                     try {
-                        stream.write(bf.array());
+                        WritableByteChannel channel = Channels.newChannel(stream);
+                        channel.write(bf);
+                        channel.close();
                     } catch (IOException e) {
                         throw logger.logExceptionAsError(new UncheckedIOException(e));
                     }
