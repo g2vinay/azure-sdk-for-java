@@ -10,9 +10,11 @@ import com.azure.core.credential.TokenRequestContext;
 import com.azure.identity.implementation.IdentityClient;
 import com.azure.identity.implementation.IdentityClientBuilder;
 import com.azure.identity.implementation.IdentityClientOptions;
+import com.azure.identity.implementation.MsalToken;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An AAD credential that acquires a token with a client secret for an AAD application.
@@ -28,6 +30,8 @@ public class ClientSecretCredential implements TokenCredential {
     /* The client secret value. */
     private final String clientSecret;
     private final IdentityClient identityClient;
+    private final AtomicReference<AccessToken> cachedToken;
+
 
     /**
      * Creates a ClientSecretCredential with the given identity client options.
@@ -42,15 +46,26 @@ public class ClientSecretCredential implements TokenCredential {
         Objects.requireNonNull(clientSecret, "'clientSecret' cannot be null.");
         Objects.requireNonNull(identityClientOptions, "'identityClientOptions' cannot be null.");
         identityClient = new IdentityClientBuilder()
-            .tenantId(tenantId)
-            .clientId(clientId)
-            .identityClientOptions(identityClientOptions)
-            .build();
+                             .tenantId(tenantId)
+                             .clientId(clientId)
+                             .identityClientOptions(identityClientOptions)
+                             .build();
         this.clientSecret = clientSecret;
+        cachedToken = new AtomicReference<>();
     }
 
     @Override
     public Mono<AccessToken> getToken(TokenRequestContext request) {
-        return identityClient.authenticateWithClientSecret(clientSecret, request);
+        return Mono.defer(() -> {
+            if (cachedToken.get() != null && !cachedToken.get().isExpired()) {
+                return Mono.just(cachedToken.get());
+            } else {
+                return Mono.empty();
+            }
+        }).switchIfEmpty(Mono.defer(() -> identityClient.authenticateWithClientSecret(clientSecret, request)))
+                   .map(token -> {
+                       cachedToken.set(token);
+                       return token;
+                   });
     }
 }

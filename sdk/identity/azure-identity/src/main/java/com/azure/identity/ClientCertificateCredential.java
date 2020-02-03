@@ -13,6 +13,7 @@ import com.azure.identity.implementation.IdentityClientOptions;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An AAD credential that acquires a token with a client certificate for an AAD application.
@@ -28,6 +29,8 @@ public class ClientCertificateCredential implements TokenCredential {
     private final String clientCertificate;
     private final String clientCertificatePassword;
     private final IdentityClient identityClient;
+    private final AtomicReference<AccessToken> cachedToken;
+
 
     /**
      * Creates a ClientSecretCredential with default identity client options.
@@ -48,14 +51,31 @@ public class ClientCertificateCredential implements TokenCredential {
                 .clientId(clientId)
                 .identityClientOptions(identityClientOptions)
                 .build();
+        cachedToken = new AtomicReference<>();
     }
 
     @Override
     public Mono<AccessToken> getToken(TokenRequestContext request) {
-        if (clientCertificatePassword != null) {
-            return identityClient.authenticateWithPfxCertificate(clientCertificate, clientCertificatePassword, request);
-        } else {
-            return identityClient.authenticateWithPemCertificate(clientCertificate, request);
-        }
+        return Mono.defer(() -> {
+            if (cachedToken.get() != null && !cachedToken.get().isExpired()) {
+                return Mono.just(cachedToken.get());
+            } else {
+                return Mono.empty();
+            }
+        }).switchIfEmpty(Mono.defer(() -> {
+            if (clientCertificatePassword != null) {
+                return identityClient.authenticateWithPfxCertificate(clientCertificate, clientCertificatePassword, request)
+                    .map(accessToken -> {
+                        cachedToken.set(accessToken);
+                        return accessToken;
+                    });
+            } else {
+                return identityClient.authenticateWithPemCertificate(clientCertificate, request)
+                    .map(accessToken -> {
+                        cachedToken.set(accessToken);
+                        return accessToken;
+                    });
+            }
+        }));
     }
 }
