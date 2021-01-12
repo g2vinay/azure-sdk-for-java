@@ -281,8 +281,8 @@ public final class ServiceBusReceiverClient implements AutoCloseable {
      *
      * @see <a href="https://docs.microsoft.com/azure/service-bus-messaging/message-browsing">Message browsing</a>
      */
-    public ServiceBusReceivedMessage peekMessageAt(long sequenceNumber) {
-        return this.peekMessageAt(sequenceNumber, asyncClient.getReceiverOptions().getSessionId());
+    public ServiceBusReceivedMessage peekMessage(long sequenceNumber) {
+        return this.peekMessage(sequenceNumber, asyncClient.getReceiverOptions().getSessionId());
     }
 
     /**
@@ -296,8 +296,8 @@ public final class ServiceBusReceiverClient implements AutoCloseable {
      * @throws IllegalStateException if receiver is already disposed.
      * @see <a href="https://docs.microsoft.com/azure/service-bus-messaging/message-browsing">Message browsing</a>
      */
-    ServiceBusReceivedMessage peekMessageAt(long sequenceNumber, String sessionId) {
-        return asyncClient.peekMessageAt(sequenceNumber, sessionId).block(operationTimeout);
+    ServiceBusReceivedMessage peekMessage(long sequenceNumber, String sessionId) {
+        return asyncClient.peekMessage(sequenceNumber, sessionId).block(operationTimeout);
     }
 
     /**
@@ -358,8 +358,8 @@ public final class ServiceBusReceiverClient implements AutoCloseable {
      *
      * @see <a href="https://docs.microsoft.com/azure/service-bus-messaging/message-browsing">Message browsing</a>
      */
-    public IterableStream<ServiceBusReceivedMessage> peekMessagesAt(int maxMessages, long sequenceNumber) {
-        return this.peekMessagesAt(maxMessages, sequenceNumber, asyncClient.getReceiverOptions().getSessionId());
+    public IterableStream<ServiceBusReceivedMessage> peekMessages(int maxMessages, long sequenceNumber) {
+        return this.peekMessages(maxMessages, sequenceNumber, asyncClient.getReceiverOptions().getSessionId());
     }
 
     /**
@@ -375,13 +375,13 @@ public final class ServiceBusReceiverClient implements AutoCloseable {
      * @throws IllegalStateException if receiver is already disposed.
      * @see <a href="https://docs.microsoft.com/azure/service-bus-messaging/message-browsing">Message browsing</a>
      */
-    IterableStream<ServiceBusReceivedMessage> peekMessagesAt(int maxMessages, long sequenceNumber, String sessionId) {
+    IterableStream<ServiceBusReceivedMessage> peekMessages(int maxMessages, long sequenceNumber, String sessionId) {
         if (maxMessages <= 0) {
             throw logger.logExceptionAsError(new IllegalArgumentException(
                 "'maxMessages' cannot be less than or equal to 0. maxMessages: " + maxMessages));
         }
 
-        final Flux<ServiceBusReceivedMessage> messages = asyncClient.peekMessagesAt(maxMessages, sequenceNumber,
+        final Flux<ServiceBusReceivedMessage> messages = asyncClient.peekMessages(maxMessages, sequenceNumber,
             sessionId).timeout(operationTimeout);
 
         // Subscribe so we can kick off this operation.
@@ -392,8 +392,8 @@ public final class ServiceBusReceiverClient implements AutoCloseable {
 
     /**
      * Receives an iterable stream of {@link ServiceBusReceivedMessage messages} from the Service Bus entity. The
-     * receive operation will wait for a default 1 minute for receiving a message before it times out. You can it
-     * override by using {@link #receiveMessages(int, Duration)}.
+     * receive operation will wait for a default 1 minute for receiving a message before it times out. You can
+     * override it by using {@link #receiveMessages(int, Duration)}.
      *
      * @param maxMessages The maximum number of messages to receive.
      *
@@ -538,6 +538,7 @@ public final class ServiceBusReceiverClient implements AutoCloseable {
      * @throws NullPointerException if {@code message} or {@code maxLockRenewalDuration} is null.
      * @throws IllegalStateException if the receiver is a session receiver or the receiver is disposed.
      * @throws IllegalArgumentException if {@code message.getLockToken()} is an empty value.
+     * @throws ServiceBusException If the message cannot be renewed.
      */
     public void renewMessageLock(ServiceBusReceivedMessage message, Duration maxLockRenewalDuration,
         Consumer<Throwable> onError) {
