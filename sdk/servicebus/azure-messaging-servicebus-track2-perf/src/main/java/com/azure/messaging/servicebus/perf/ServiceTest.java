@@ -68,6 +68,8 @@ abstract class ServiceTest<TOptions extends PerfStressOptions> extends PerfStres
         ServiceBusClientBuilder.ServiceBusReceiverClientBuilder receiverBuilder = baseBuilder
             .receiver()
             .receiveMode(receiveMode)
+            .disableAutoComplete()
+            .prefetchCount(100)
             .queueName(queueName);
 
         ServiceBusClientBuilder.ServiceBusSenderClientBuilder senderBuilder = baseBuilder

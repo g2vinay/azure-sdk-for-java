@@ -8,6 +8,7 @@ import com.azure.core.util.logging.ClientLogger;
 import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
 import com.azure.messaging.servicebus.models.ServiceBusReceiveMode;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ public class ReceiveAndDeleteMessageTest extends ServiceTest<ServiceBusStressOpt
     private final ClientLogger logger = new ClientLogger(ReceiveAndDeleteMessageTest.class);
     private final ServiceBusStressOptions options;
 
+    private final Flux<ServiceBusReceivedMessage> receiverFlux;
+
     /**
      * Creates test object
      * @param options to set performance test options.
@@ -28,6 +31,7 @@ public class ReceiveAndDeleteMessageTest extends ServiceTest<ServiceBusStressOpt
     public ReceiveAndDeleteMessageTest(ServiceBusStressOptions options) {
         super(options, ServiceBusReceiveMode.RECEIVE_AND_DELETE);
         this.options = options;
+        this.receiverFlux =  receiverAsync.receiveMessages().publish().autoConnect();
     }
 
     @Override
@@ -47,25 +51,28 @@ public class ReceiveAndDeleteMessageTest extends ServiceTest<ServiceBusStressOpt
 
     @Override
     public void run() {
-        IterableStream<ServiceBusReceivedMessage> messages = receiver
-            .receiveMessages(options.getMessagesToReceive());
-
         int count = 0;
-        for (ServiceBusReceivedMessage message : messages) {
-            if (message.getBody() != null) {
-                ++count;
+        while (count < options.getMessagesToReceive()) {
+            IterableStream<ServiceBusReceivedMessage> messages = receiver
+                .receiveMessages(options.getMessagesToReceive());
+
+            for (ServiceBusReceivedMessage message : messages) {
+                if (message.getBody() != null) {
+                    ++count;
+                }
+            }
+
+            if (count <= 0) {
+                throw logger.logExceptionAsWarning(new RuntimeException("Error. Should have received some messages."));
             }
         }
 
-        if (count <= 0) {
-            throw logger.logExceptionAsWarning(new RuntimeException("Error. Should have received some messages."));
-        }
+
     }
 
     @Override
     public Mono<Void> runAsync() {
-        return receiverAsync
-            .receiveMessages()
+        return receiverFlux
             .take(options.getMessagesToReceive())
             .map(serviceBusReceivedMessageContext -> {
                 return serviceBusReceivedMessageContext;

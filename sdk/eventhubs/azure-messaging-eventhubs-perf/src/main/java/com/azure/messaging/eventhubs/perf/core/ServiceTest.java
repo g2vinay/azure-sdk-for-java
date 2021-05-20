@@ -52,12 +52,12 @@ public abstract class ServiceTest<TOptions extends PerfStressOptions> extends Pe
         }).then();
     }
 
-    @Override
-    public Mono<Void> cleanupAsync() {
-        return Mono.fromCallable(() -> {
-            eventHubProducerAsyncClient.close();
-            eventHubProducerClient.close();
-            return 1;
-        }).then();
-    }
+//    @Override
+//    public Mono<Void> cleanupAsync() {
+//        return Mono.fromCallable(() -> {
+//            eventHubProducerAsyncClient.close();
+//            eventHubProducerClient.close();
+//            return 1;
+//        }).then();
+//    }
 }

@@ -3,9 +3,11 @@
 
 package com.microsoft.azure.eventhubs.perf;
 
+import com.azure.perf.test.core.TestDataCreationHelper;
 import com.microsoft.azure.eventhubs.BatchOptions;
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventhubs.EventDataBatch;
+import com.microsoft.azure.eventhubs.EventHubException;
 import com.microsoft.azure.eventhubs.perf.core.EventHubsPerfStressOptions;
 import com.microsoft.azure.eventhubs.perf.core.ServiceTest;
 import reactor.core.publisher.Mono;
@@ -44,13 +46,16 @@ public class SendEventBatchTest extends ServiceTest<EventHubsPerfStressOptions> 
         return super.setupAsync()
             .then(Mono.fromCallable(() -> {
                 eventDataBatch = eventHubClient.createBatch(batchOptions);
-                EventData eventData =  EventData.create(generateString(options.getMessageSize())
+                EventData eventData =  EventData.create(TestDataCreationHelper
+                    .generateRandomString(options.getMessageSize())
                     .getBytes(StandardCharsets.UTF_8));
                 for (int i = 0; i < options.getEvents(); i++) {
-                    if (!eventDataBatch.tryAdd(eventData)) {
-                        throw new IllegalStateException(String.format("Batch can only fit %d number of messages with "
-                                + "batch size of %d ",
-                            options.getCount(), options.getSize()));
+                    if (!eventDataBatch.tryAdd(EventData.create(TestDataCreationHelper
+                        .generateRandomString(options.getMessageSize())
+                        .getBytes(StandardCharsets.UTF_8)))) {
+                        throw new RuntimeException(String.format("Batch can only fit %d number of messages with "
+                                + "batch size of %s ", i , options.getBatchSize() == null ?"default"
+                                : options.getBatchSize().toString()));
                     }
                 }
                 return 1;
@@ -61,7 +66,11 @@ public class SendEventBatchTest extends ServiceTest<EventHubsPerfStressOptions> 
     // Perform the API call to be tested here
     @Override
     public void run() {
-        eventHubClient.send(eventDataBatch);
+        try {
+            eventHubClient.sendSync(eventDataBatch);
+        } catch (EventHubException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

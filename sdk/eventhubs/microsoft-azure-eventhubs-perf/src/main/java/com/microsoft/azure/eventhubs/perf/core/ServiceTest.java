@@ -12,7 +12,6 @@ import com.microsoft.azure.eventhubs.EventHubException;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -39,11 +38,6 @@ public abstract class ServiceTest<TOptions extends PerfStressOptions> extends Pe
             System.out.println("Environment variable EVENTHUB_NAME must be set");
             System.exit(1);
         }
-//        executor = Executors
-//            .newScheduledThreadPool(poolSize != null ? Integer.valueOf(poolSize) : 4);
-//        eventHubClient = EventHubClient.createSync(
-//            new ConnectionStringBuilder(connectionString).setEventHubName(eventHubName).toString(), executor);
-
     }
 
     @Override
@@ -64,17 +58,5 @@ public abstract class ServiceTest<TOptions extends PerfStressOptions> extends Pe
             executor.shutdownNow();
             return 1;
         }).then();
-    }
-
-    protected String generateString(int targetLength) {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        Random random = new Random();
-
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-            .limit(targetLength)
-            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-            .toString();
-        return generatedString;
     }
 }

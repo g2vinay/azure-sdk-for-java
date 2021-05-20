@@ -8,9 +8,8 @@ import com.azure.messaging.eventhubs.EventDataBatch;
 import com.azure.messaging.eventhubs.models.CreateBatchOptions;
 import com.azure.messaging.eventhubs.perf.core.EventHubsPerfStressOptions;
 import com.azure.messaging.eventhubs.perf.core.ServiceTest;
+import com.azure.perf.test.core.TestDataCreationHelper;
 import reactor.core.publisher.Mono;
-
-import java.util.Random;
 
 /**
  * Runs the Send Events Batch Performance Test for EventHubs.
@@ -67,7 +66,7 @@ public class SendEventBatchTest extends ServiceTest<EventHubsPerfStressOptions> 
     }
 
     private void addEventsToBatch(EventDataBatch eventDataBatch) {
-        EventData eventData = new EventData(generateString(options.getMessageSize()));
+        EventData eventData = new EventData(TestDataCreationHelper.generateRandomString(options.getMessageSize()));
         for (int i = 0; i < options.getEvents(); i++) {
             if (!eventDataBatch.tryAdd(eventData)) {
                 throw new IllegalStateException(String.format(
@@ -109,17 +108,5 @@ public class SendEventBatchTest extends ServiceTest<EventHubsPerfStressOptions> 
     @Override
     public Mono<Void> runAsync() {
         return eventHubProducerAsyncClient.send(eventDataBatchAsync);
-    }
-
-    private String generateString(int targetLength) {
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        Random random = new Random();
-
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-            .limit(targetLength)
-            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-            .toString();
-        return generatedString;
     }
 }

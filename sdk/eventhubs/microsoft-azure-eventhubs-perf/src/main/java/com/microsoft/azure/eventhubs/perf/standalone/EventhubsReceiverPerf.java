@@ -3,6 +3,7 @@
 
 package com.microsoft.azure.eventhubs.perf.standalone;
 
+import com.azure.core.util.CoreUtils;
 import com.microsoft.azure.eventhubs.ConnectionStringBuilder;
 import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.eventhubs.EventHubException;
@@ -34,12 +35,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 public class EventhubsReceiverPerf {
-    private static final String EVENTHUB_NAME = System.getenv("EVENTHUB_NAME");;
-
     // Settings copied from
     // https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-faq#how-much-does-a-single-capacity-unit-let-me-achieve
     private static final int MESSAGES_PER_BATCH = 100;
-    private static final int BYTES_PER_MESSAGE = 1024;
 
     public static void main(String[] args)
         throws InterruptedException, IOException, EventHubException, ExecutionException {
@@ -50,6 +48,9 @@ public class EventhubsReceiverPerf {
 
         Option partitionsOption = new Option("p", "partitions", true, "Number of partitions");
         options.addOption(partitionsOption);
+
+        Option messageSizeOption = new Option("ms", "messagesize", true, "Message Size in bytes");
+        options.addOption(messageSizeOption);
 
         Option verboseOption = new Option("v", "verbose", false, "Enables verbose output");
         options.addOption(verboseOption);
@@ -68,34 +69,40 @@ public class EventhubsReceiverPerf {
 
         int clients = Integer.parseInt(cmd.getOptionValue("clients", "1"));
         int partitions = Integer.parseInt(cmd.getOptionValue("partitions", "5"));
+        int messageSize = Integer.parseInt(cmd.getOptionValue("messagesize", "100"));
         boolean verbose = cmd.hasOption("verbose");
 
         String connectionString = System.getenv("EVENTHUBS_CONNECTION_STRING");
-        if (connectionString == null || connectionString.isEmpty()) {
-            System.out.println("Environment variable EVENT_HUBS_CONNECTION_STRING must be set");
-            System.exit(1);
+        String eventhubName = System.getenv("EVENTHUB_NAME");
+        if (CoreUtils.isNullOrEmpty(connectionString)) {
+            throw new IllegalStateException("Environment variable EVENT_HUBS_CONNECTION_STRING must be set");
         }
 
-        receiveMessages(connectionString, partitions, clients, verbose);
+        if (CoreUtils.isNullOrEmpty(eventhubName)) {
+            throw new IllegalStateException("Environment variable EVENTHUB_NAME must be set");
+        }
+
+        receiveMessages(connectionString, eventhubName, clients, messageSize, verbose);
     }
 
-    static void receiveMessages(String connectionString, int numPartitions, int numClients, boolean verbose)
+    static void receiveMessages(String connectionString, String eventhubName, int numClients,
+                                int messageSize, boolean verbose)
         throws InterruptedException, EventHubException, IOException, ExecutionException {
-        System.out.println(String.format("Receiving messages from %d partitions using %d client instances",
-            numPartitions, numClients));
+        System.out.println(String.format("Receiving messages using %d client instances", numClients));
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
 
         EventHubClient[] clients = new EventHubClient[numClients];
         for (int i = 0; i < numClients; i++) {
             clients[i] = EventHubClient.createSync(
-                new ConnectionStringBuilder(connectionString).setEventHubName(EVENTHUB_NAME).toString(), executor);
+                new ConnectionStringBuilder(connectionString).setEventHubName(eventhubName).toString(), executor);
         }
 
         try {
             EventHubClient client = clients[0];
             EventHubRuntimeInformation eventHubInfo = client.getRuntimeInformation().get();
-            String[] partitionIds = Arrays.copyOfRange(eventHubInfo.getPartitionIds(), 0, numPartitions);
+            String[] partitionIds = eventHubInfo.getPartitionIds();
+            int numPartitions = partitionIds.length;
 
             List<CompletableFuture<PartitionRuntimeInformation>> partitionsFutures = new ArrayList<CompletableFuture<PartitionRuntimeInformation>>(
                 numPartitions);
@@ -144,10 +151,10 @@ public class EventhubsReceiverPerf {
                 double elapsed = 1.0 * (end - start) / 1000000000;
                 long messagesReceived = totalCount;
                 double messagesPerSecond = messagesReceived / elapsed;
-                double megabytesPerSecond = (messagesPerSecond * BYTES_PER_MESSAGE) / (1024 * 1024);
+                double megabytesPerSecond = (messagesPerSecond * messageSize) / (1024 * 1024);
 
                 System.out.println(String.format("Received %d messages of size %d in %.2fs (%.2f msg/s, %.2f MB/s))",
-                    messagesReceived, BYTES_PER_MESSAGE, elapsed, messagesPerSecond, megabytesPerSecond));
+                    messagesReceived, messageSize, elapsed, messagesPerSecond, megabytesPerSecond));
             } finally {
                 receivers.stream().map(PartitionReceiver::close).map(CompletableFuture::join);
             }

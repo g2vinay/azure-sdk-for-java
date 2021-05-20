@@ -3,6 +3,7 @@
 
 package com.microsoft.azure.eventhubs.perf;
 
+import com.azure.perf.test.core.TestDataCreationHelper;
 import com.microsoft.azure.eventhubs.BatchOptions;
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventhubs.EventDataBatch;
@@ -48,7 +49,8 @@ public class SendEventBatchPartitionTest extends ServiceTest<EventHubsPerfStress
             .then(Mono.fromCallable(() -> {
                 partitionSender = eventHubClient.createPartitionSender(String.valueOf(options.getPartitionId())).get();
                 eventDataBatch = partitionSender.createBatch(batchOptions);
-                EventData eventData =  EventData.create(generateString(options.getMessageSize())
+                EventData eventData =  EventData.create(TestDataCreationHelper
+                    .generateRandomString(options.getMessageSize())
                     .getBytes(StandardCharsets.UTF_8));
 
                 for (int i = 0; i < options.getEvents(); i++) {

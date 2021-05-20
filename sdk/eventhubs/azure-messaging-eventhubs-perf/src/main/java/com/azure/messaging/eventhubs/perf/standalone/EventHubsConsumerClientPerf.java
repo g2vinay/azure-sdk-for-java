@@ -3,6 +3,7 @@
 
 package com.azure.messaging.eventhubs.perf.standalone;
 
+import com.azure.core.util.CoreUtils;
 import com.azure.messaging.eventhubs.EventHubClientBuilder;
 import com.azure.messaging.eventhubs.EventHubConsumerAsyncClient;
 import com.azure.messaging.eventhubs.models.EventPosition;
@@ -59,16 +60,20 @@ public class EventHubsConsumerClientPerf {
         boolean debug = cmd.hasOption("debug");
 
         String connectionString = System.getenv("EVENTHUBS_CONNECTION_STRING");
+        String eventhubName = System.getenv("EVENTHUB_NAME");
 
-        if (connectionString == null || connectionString.isEmpty()) {
-            throw new IllegalStateException("Environment variable EVENT_HUBS_CONNECTION_STRING must be set");
+        if (CoreUtils.isNullOrEmpty(connectionString)) {
+            throw new IllegalStateException("Environment variable EVENTHUBS_CONNECTION_STRING must be set");
         }
-        receiveMessages(connectionString, partitions, clients, verbose, debug);
+
+        if (CoreUtils.isNullOrEmpty(eventhubName)) {
+            throw new IllegalStateException("Environment variable EVENTHUB_NAME must be set");
+        }
+        receiveMessages(connectionString, clients, verbose, debug);
     }
-    static void receiveMessages(String connectionString, int numPartitions, int numClients, boolean verbose,
+    static void receiveMessages(String connectionString, int numClients, boolean verbose,
                                 boolean debug) throws InterruptedException, InterruptException {
-        System.out.println(String.format("Receiving messages from %d partitions using %d client instances",
-            numPartitions, numClients));
+        System.out.println(String.format("Receiving messages using %d client instances", numClients));
         EventHubConsumerAsyncClient[] clients = new EventHubConsumerAsyncClient[numClients];
         for (int i = 0; i < numClients; i++) {
             clients[i] = new EventHubClientBuilder().connectionString(connectionString, EVENTHUB_NAME)
@@ -78,7 +83,7 @@ public class EventHubsConsumerClientPerf {
         try {
             EventHubConsumerAsyncClient client = clients[0];
             long[] totalCount = new long[1];
-            client.getPartitionIds()
+            int numPartitions = client.getPartitionIds()
                 .concatMap(client::getPartitionProperties)
                 .map(partitionProperties -> {
                         long begin = partitionProperties.getBeginningSequenceNumber();
@@ -90,7 +95,7 @@ public class EventHubsConsumerClientPerf {
                         }
                         totalCount[0] += count;
                         return partitionProperties;
-                    }).collectList().block();
+                    }).collectList().block().size();
 
             if (verbose) {
                 System.out.println(String.format("Total Count: %d", totalCount[0]));

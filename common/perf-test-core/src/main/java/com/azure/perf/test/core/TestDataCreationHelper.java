@@ -89,6 +89,24 @@ public class TestDataCreationHelper {
         outputStream.write(RANDOM_BYTES, 0, remainder);
     }
 
+    /**
+     * Generates a random string containing alphabetic characters.
+     *
+     * @param targetLength the target length of the string.
+     * @return the generated string.
+     */
+    public static String generateRandomString(int targetLength) {
+        int leftLimit = 97;
+        int rightLimit = 122;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+            .limit(targetLength)
+            .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+            .toString();
+        return generatedString;
+    }
+
     private static final class RepeatingInputStream extends InputStream {
         private final int size;
 
