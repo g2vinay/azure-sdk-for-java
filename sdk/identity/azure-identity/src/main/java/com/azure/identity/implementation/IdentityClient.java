@@ -377,10 +377,12 @@ public class IdentityClient {
      * @return a Publisher that emits an AccessToken
      */
     public Mono<AccessToken> authenticateWithAzureCli(TokenRequestContext request) {
-        String azCommand = "az account get-access-token --output json --resource ";
+        StringBuilder command = new StringBuilder("az account get-access-token --output json --resource ");
+        if (tenantId != null) {
+            command.append("--tenant " + tenantId);
+        }
 
-        StringBuilder command = new StringBuilder();
-        command.append(azCommand);
+        command.append(command);
 
         String scopes = ScopeUtil.scopesToResource(request.getScopes());
 
@@ -536,6 +538,9 @@ public class IdentityClient {
                         + "Azure PowerShell Credential."));
                     }
                     StringBuilder accessTokenCommand = new StringBuilder("Get-AzAccessToken -ResourceUrl ");
+                    if (tenantId != null) {
+                        accessTokenCommand.append("-TenantId " + tenantId);
+                    }
                     accessTokenCommand.append(ScopeUtil.scopesToResource(request.getScopes()));
                     accessTokenCommand.append(" | ConvertTo-Json");
                     return manager.runCommand(accessTokenCommand.toString())

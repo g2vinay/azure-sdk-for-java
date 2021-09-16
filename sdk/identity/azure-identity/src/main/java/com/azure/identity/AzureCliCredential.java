@@ -27,8 +27,10 @@ public class AzureCliCredential implements TokenCredential {
      * Creates an AzureCliSecretCredential with default identity client options.
      * @param identityClientOptions the options to configure the identity client
      */
-    AzureCliCredential(IdentityClientOptions identityClientOptions) {
-        identityClient = new IdentityClientBuilder().identityClientOptions(identityClientOptions).build();
+    AzureCliCredential(String tenantId, IdentityClientOptions identityClientOptions) {
+        identityClient = new IdentityClientBuilder()
+            .tenantId(tenantId)
+            .identityClientOptions(identityClientOptions).build();
     }
 
     @Override
