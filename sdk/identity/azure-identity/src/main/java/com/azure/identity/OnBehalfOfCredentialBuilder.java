@@ -30,6 +30,17 @@ public class OnBehalfOfCredentialBuilder extends AadCredentialBuilderBase<OnBeha
     }
 
     /**
+     * Sets the path of the PEM certificate for authenticating to AAD.
+     *
+     * @param certificatePath the PEM file containing the certificate
+     * @return An updated instance of this builder.
+     */
+    public OnBehalfOfCredentialBuilder pemCertificate(String certificatePath) {
+        this.clientCertificatePath = certificatePath;
+        return this;
+    }
+
+    /**
      * Configures the persistent shared token cache options and enables the persistent token cache which is disabled
      * by default. If configured, the credential will store tokens in a cache persisted to the machine, protected to
      * the current user, which can be shared by other credentials and processes.
@@ -47,15 +58,25 @@ public class OnBehalfOfCredentialBuilder extends AadCredentialBuilderBase<OnBeha
      * Sets the path and password of the PFX certificate for authenticating to AAD.
      *
      * @param certificatePath the password protected PFX file containing the certificate
-     * @param clientCertificatePassword the password protecting the PFX file
      * @return An updated instance of this builder.
      */
-    public OnBehalfOfCredentialBuilder pfxCertificate(String certificatePath,
-                                                             String clientCertificatePassword) {
+    public OnBehalfOfCredentialBuilder pfxCertificate(String certificatePath) {
         this.clientCertificatePath = certificatePath;
         this.clientCertificatePassword = clientCertificatePassword;
         return this;
     }
+
+    /**
+     * Sets the password of the PFX/PEM certificate for authenticating to AAD.
+     *
+     * @param clientCertificatePassword the password protecting the PFX file
+     * @return An updated instance of this builder.
+     */
+    public OnBehalfOfCredentialBuilder certificatePassword(String clientCertificatePassword) {
+        this.clientCertificatePassword = clientCertificatePassword;
+        return this;
+    }
+
 
     /**
      * Specifies if the x5c claim (public key of the certificate) should be sent as part of the authentication request

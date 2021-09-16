@@ -406,6 +406,7 @@ public class IdentityClient {
      */
     public Mono<AccessToken> authenticateWithAzureCli(TokenRequestContext request) {
         StringBuilder command = new StringBuilder("az account get-access-token --output json --resource ");
+        String tenantId = IdentityUtil.resolveTenantId(this.tenantId, request, options);
         if (tenantId != null) {
             command.append("--tenant " + tenantId);
         }
@@ -584,6 +585,7 @@ public class IdentityClient {
                         + "Azure PowerShell Credential."));
                     }
                     StringBuilder accessTokenCommand = new StringBuilder("Get-AzAccessToken -ResourceUrl ");
+                    String tenantId = IdentityUtil.resolveTenantId(this.tenantId, request, options);
                     if (tenantId != null) {
                         accessTokenCommand.append("-TenantId " + tenantId);
                     }
