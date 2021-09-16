@@ -1,7 +1,26 @@
 # Release History
 
-## 2.7.0-beta.1 (Unreleased)
+## 2.9.0-beta.1 (Unreleased)
+This release is compatible with Spring Boot 2.5.0 - 2.5.4 and Spring Cloud 2020.0.3.
+### Dependency Upgrades
+- Upgrade to [spring-boot-dependencies:2.5.4](https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-dependencies/2.5.4/spring-boot-dependencies-2.5.4.pom).
 
+### Features Added
+
+### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
+
+## 2.8.0 (2021-08-25)
+This release is compatible with Spring Boot 2.5.0 - 2.5.3 and Spring Cloud 2020.0.3.
+### Dependency Upgrades
+- Upgrade to [spring-boot-dependencies:2.5.3](https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-dependencies/2.5.3/spring-boot-dependencies-2.5.3.pom).
+
+## 2.7.0 (2021-07-20)
+### Dependency Upgrades
+- Upgrade to [Spring Integration 5.5.1](https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-core/5.5.1).
 
 ## 2.6.0 (2021-06-23)
 ### New Features
@@ -37,4 +56,4 @@
 
 ## 1.2.8 (2020-09-14)
 ### Breaking Changes
-- Unify Azure Spring Cloud packages version
+- Unify Spring Cloud for Azure packages version

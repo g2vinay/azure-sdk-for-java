@@ -203,6 +203,23 @@ public final class SearchRequest {
     @JsonProperty(value = "top")
     private Integer top;
 
+    /*
+     * This parameter is only valid if the query type is 'semantic'. If set,
+     * the query returns captions extracted from key passages in the highest
+     * ranked documents. When Captions is set to 'extractive', highlighting is
+     * enabled by default, and can be configured by appending the pipe
+     * character '|' followed by the 'highlight-<true/false>' option, such as
+     * 'extractive|highlight-true'. Defaults to 'None'.
+     */
+    @JsonProperty(value = "captions")
+    private String captions;
+
+    /*
+     * The comma-separated list of field names used for semantic search.
+     */
+    @JsonProperty(value = "semanticFields")
+    private String semanticFields;
+
     /**
      * Get the includeTotalResultCount property: A value that specifies whether to fetch the total count of results.
      * Default is false. Setting this value to true may have a performance impact. Note that the count returned is an
@@ -712,6 +729,52 @@ public final class SearchRequest {
      */
     public SearchRequest setTop(Integer top) {
         this.top = top;
+        return this;
+    }
+
+    /**
+     * Get the captions property: This parameter is only valid if the query type is 'semantic'. If set, the query
+     * returns captions extracted from key passages in the highest ranked documents. When Captions is set to
+     * 'extractive', highlighting is enabled by default, and can be configured by appending the pipe character '|'
+     * followed by the 'highlight-&lt;true/false&gt;' option, such as 'extractive|highlight-true'. Defaults to 'None'.
+     *
+     * @return the captions value.
+     */
+    public String getCaptions() {
+        return this.captions;
+    }
+
+    /**
+     * Set the captions property: This parameter is only valid if the query type is 'semantic'. If set, the query
+     * returns captions extracted from key passages in the highest ranked documents. When Captions is set to
+     * 'extractive', highlighting is enabled by default, and can be configured by appending the pipe character '|'
+     * followed by the 'highlight-&lt;true/false&gt;' option, such as 'extractive|highlight-true'. Defaults to 'None'.
+     *
+     * @param captions the captions value to set.
+     * @return the SearchRequest object itself.
+     */
+    public SearchRequest setCaptions(String captions) {
+        this.captions = captions;
+        return this;
+    }
+
+    /**
+     * Get the semanticFields property: The comma-separated list of field names used for semantic search.
+     *
+     * @return the semanticFields value.
+     */
+    public String getSemanticFields() {
+        return this.semanticFields;
+    }
+
+    /**
+     * Set the semanticFields property: The comma-separated list of field names used for semantic search.
+     *
+     * @param semanticFields the semanticFields value to set.
+     * @return the SearchRequest object itself.
+     */
+    public SearchRequest setSemanticFields(String semanticFields) {
+        this.semanticFields = semanticFields;
         return this;
     }
 }

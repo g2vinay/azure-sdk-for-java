@@ -37,6 +37,7 @@ import com.azure.search.documents.models.IndexBatchException;
 import com.azure.search.documents.models.IndexDocumentsOptions;
 import com.azure.search.documents.models.IndexDocumentsResult;
 import com.azure.search.documents.models.QueryAnswer;
+import com.azure.search.documents.models.QueryCaption;
 import com.azure.search.documents.models.ScoringParameter;
 import com.azure.search.documents.models.SearchOptions;
 import com.azure.search.documents.models.SearchResult;
@@ -841,10 +842,12 @@ public final class SearchAsyncClient {
             .setSessionId(options.getSessionId())
             .setSelect(nullSafeStringJoin(options.getSelect()))
             .setSkip(options.getSkip())
-            .setTop(options.getTop());
+            .setTop(options.getTop())
+            .setCaptions(createSearchRequestCaptions(options))
+            .setSemanticFields(nullSafeStringJoin(options.getSemanticFields()));
     }
 
-    private static String createSearchRequestAnswers(SearchOptions searchOptions) {
+    static String createSearchRequestAnswers(SearchOptions searchOptions) {
         QueryAnswer answer = searchOptions.getAnswers();
         Integer answersCount = searchOptions.getAnswersCount();
 
@@ -859,7 +862,25 @@ public final class SearchAsyncClient {
         }
 
         // Answer and count, format it as the service expects.
-        return String.format("%s|count-%d", answer, answersCount);
+        return answer + "|count-" + answersCount;
+    }
+
+    static String createSearchRequestCaptions(SearchOptions searchOptions) {
+        QueryCaption queryCaption = searchOptions.getQueryCaption();
+        Boolean queryCaptionHighlight = searchOptions.getQueryCaptionHighlight();
+
+        // No caption has been defined.
+        if (queryCaption == null) {
+            return null;
+        }
+
+        // No highlight, just send the Caption.
+        if (queryCaptionHighlight == null) {
+            return queryCaption.toString();
+        }
+
+        // Caption and highlight, format it as the service expects.
+        return queryCaption + "|highlight-" + queryCaptionHighlight;
     }
 
     /**

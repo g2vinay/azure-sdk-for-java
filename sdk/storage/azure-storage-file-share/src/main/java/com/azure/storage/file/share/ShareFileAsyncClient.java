@@ -741,7 +741,7 @@ public class ShareFileAsyncClient {
                 }
                 return chunks;
             }).flatMapMany(Flux::fromIterable).flatMap(chunk ->
-                downloadWithResponse(new ShareFileDownloadOptions().setRange(chunk).setRangeContentMd5(false)
+                downloadWithResponse(new ShareFileDownloadOptions().setRange(chunk).setRangeContentMd5Requested(false)
                     .setRequestConditions(requestConditions), context)
                 .map(ShareFileDownloadAsyncResponse::getValue)
                 .subscribeOn(Schedulers.elastic())
@@ -834,7 +834,7 @@ public class ShareFileAsyncClient {
     public Mono<ShareFileDownloadAsyncResponse> downloadWithResponse(ShareFileRange range, Boolean rangeGetContentMD5,
         ShareRequestConditions requestConditions) {
         return downloadWithResponse(new ShareFileDownloadOptions().setRange(range)
-            .setRangeContentMd5(rangeGetContentMD5).setRequestConditions(requestConditions));
+            .setRangeContentMd5Requested(rangeGetContentMD5).setRequestConditions(requestConditions));
     }
 
     /**
@@ -868,7 +868,7 @@ public class ShareFileAsyncClient {
             ? new ShareRequestConditions() : options.getRequestConditions();
         DownloadRetryOptions retryOptions = options.getRetryOptions() == null ? new DownloadRetryOptions()
             : options.getRetryOptions();
-        Boolean getRangeContentMd5 = options.getRangeContentMd5();
+        Boolean getRangeContentMd5 = options.isRangeContentMd5Requested();
 
         return downloadRange(range, getRangeContentMd5, requestConditions, context)
             .map(response -> {
@@ -934,7 +934,7 @@ public class ShareFileAsyncClient {
 
     private Mono<StreamResponse> downloadRange(ShareFileRange range, Boolean rangeGetContentMD5,
         ShareRequestConditions requestConditions, Context context) {
-        String rangeString = range == null ? null : range.toString();
+        String rangeString = range == null ? null : range.toHeaderValue();
         return azureFileStorageClient.getFiles().downloadWithResponseAsync(shareName, filePath, null,
             rangeString, rangeGetContentMD5, requestConditions.getLeaseId(),  context);
     }
@@ -1513,12 +1513,14 @@ public class ShareFileAsyncClient {
             // no specified length: use azure.core's converter
             if (data == null && options.getLength() == null) {
                 // We can only buffer up to max int due to restrictions in ByteBuffer.
-                int chunkSize = (int) Math.min(Integer.MAX_VALUE, validatedParallelTransferOptions.getBlockSizeLong());
+                int chunkSize = (int) Math.min(Constants.MAX_INPUT_STREAM_CONVERTER_BUFFER_LENGTH,
+                    validatedParallelTransferOptions.getBlockSizeLong());
                 data = FluxUtil.toFluxByteBuffer(options.getDataStream(), chunkSize);
             // specified length (legacy requirement): use custom converter. no marking because we buffer anyway.
             } else if (data == null) {
                 // We can only buffer up to max int due to restrictions in ByteBuffer.
-                int chunkSize = (int) Math.min(Integer.MAX_VALUE, validatedParallelTransferOptions.getBlockSizeLong());
+                int chunkSize = (int) Math.min(Constants.MAX_INPUT_STREAM_CONVERTER_BUFFER_LENGTH,
+                    validatedParallelTransferOptions.getBlockSizeLong());
                 data = Utility.convertStreamToByteBuffer(
                     options.getDataStream(), options.getLength(), chunkSize, false);
             }
@@ -1546,7 +1548,7 @@ public class ShareFileAsyncClient {
          parallelTransferOptions.getMaxConcurrency() appends will be happening at once, so we guarantee buffering of
          only concurrency + 1 chunks at a time.
          */
-        return chunkedSource.flatMapSequential(stagingArea::write, 1)
+        return chunkedSource.flatMapSequential(stagingArea::write, 1, 1)
             .concatWith(Flux.defer(stagingArea::flush))
             .map(bufferAggregator -> Tuples.of(bufferAggregator, bufferAggregator.length(), 0L))
             /* Scan reduces a flux with an accumulator while emitting the intermediate results. */
@@ -1575,7 +1577,7 @@ public class ShareFileAsyncClient {
                 return uploadRangeWithResponse(new ShareFileUploadRangeOptions(progressData, currentBufferLength)
                     .setOffset(currentOffset).setRequestConditions(requestConditions), context)
                     .flux();
-            }, parallelTransferOptions.getMaxConcurrency())
+            }, parallelTransferOptions.getMaxConcurrency(), 1)
             .last();
     }
 
@@ -1654,6 +1656,7 @@ public class ShareFileAsyncClient {
             .map(this::uploadResponse);
     }
 
+    // TODO: (gapra) Fix put range from URL link. Service docs have not been updated to show this API
     /**
      * Uploads a range of bytes from one file to another file.
      *
@@ -1672,7 +1675,6 @@ public class ShareFileAsyncClient {
      * @param sourceUrl Specifies the URL of the source file.
      * @return The {@link ShareFileUploadRangeFromUrlInfo file upload range from url info}
      */
-    // TODO: (gapra) Fix put range from URL link. Service docs have not been updated to show this API
     @ServiceMethod(returns = ReturnType.SINGLE)
     public Mono<ShareFileUploadRangeFromUrlInfo> uploadRangeFromUrl(long length, long destinationOffset,
         long sourceOffset, String sourceUrl) {
@@ -1684,6 +1686,7 @@ public class ShareFileAsyncClient {
         }
     }
 
+    // TODO: (gapra) Fix put range from URL link. Service docs have not been updated to show this API
     /**
      * Uploads a range of bytes from one file to another file.
      *
@@ -1703,13 +1706,13 @@ public class ShareFileAsyncClient {
      * @return A response containing the {@link ShareFileUploadRangeFromUrlInfo file upload range from url info} with
      * headers and response status code.
      */
-    // TODO: (gapra) Fix put range from URL link. Service docs have not been updated to show this API
     @ServiceMethod(returns = ReturnType.SINGLE)
     public Mono<Response<ShareFileUploadRangeFromUrlInfo>> uploadRangeFromUrlWithResponse(long length,
         long destinationOffset, long sourceOffset, String sourceUrl) {
         return this.uploadRangeFromUrlWithResponse(length, destinationOffset, sourceOffset, sourceUrl, null);
     }
 
+    // TODO: (gapra) Fix put range from URL link. Service docs have not been updated to show this API
     /**
      * Uploads a range of bytes from one file to another file.
      *
@@ -1730,7 +1733,6 @@ public class ShareFileAsyncClient {
      * @return A response containing the {@link ShareFileUploadRangeFromUrlInfo file upload range from url info} with
      * headers and response status code.
      */
-    // TODO: (gapra) Fix put range from URL link. Service docs have not been updated to show this API
     @ServiceMethod(returns = ReturnType.SINGLE)
     public Mono<Response<ShareFileUploadRangeFromUrlInfo>> uploadRangeFromUrlWithResponse(long length,
         long destinationOffset, long sourceOffset, String sourceUrl,
@@ -1740,6 +1742,7 @@ public class ShareFileAsyncClient {
             .setDestinationRequestConditions(destinationRequestConditions));
     }
 
+    // TODO: (gapra) Fix put range from URL link. Service docs have not been updated to show this API
     /**
      * Uploads a range of bytes from one file to another file.
      *
@@ -1756,7 +1759,6 @@ public class ShareFileAsyncClient {
      * @return A response containing the {@link ShareFileUploadRangeFromUrlInfo file upload range from url info} with
      * headers and response status code.
      */
-    // TODO: (gapra) Fix put range from URL link. Service docs have not been updated to show this API
     @ServiceMethod(returns = ReturnType.SINGLE)
     public Mono<Response<ShareFileUploadRangeFromUrlInfo>> uploadRangeFromUrlWithResponse(
         ShareFileUploadRangeFromUrlOptions options) {

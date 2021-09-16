@@ -68,7 +68,7 @@ If you are using Maven, add the following dependency.
 <dependency>
     <groupId>com.azure</groupId>
     <artifactId>azure-spring-data-cosmos</artifactId>
-    <version>3.8.0</version>
+    <version>3.11.0</version>
 </dependency>
 ```
 [//]: # ({x-version-update-end})
@@ -293,6 +293,9 @@ public interface UserRepository extends CosmosRepository<User, String> {
 ```
 
 - `findByFirstName` method is custom query method, it will find items per firstName.
+
+#### Query Plan Caching
+When query plan caching is enabled, custom query methods like `findByFirstName(String firstName)` where `firstName` is the partition key will result in lower query execution time. Query plan caching can be enabled by setting the `COSMOS.QUERYPLAN_CACHING_ENABLED` System property to 'true'. Currently, query plan caching is only supported for custom query methods targeting a single partition.
 
 #### QueryAnnotation : Using annotated queries in repositories
 Azure spring data cosmos supports specifying annotated queries in the repositories using `@Query`.
@@ -927,8 +930,8 @@ or contact [opencode@microsoft.com][coc_contact] with any additional questions o
 [coc_contact]: mailto:opencode@microsoft.com
 [azure_subscription]: https://azure.microsoft.com/free/
 [samples]: https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/cosmos/azure-spring-data-cosmos/src/samples/java/com/azure/spring/data/cosmos
-[sample-for-multi-database]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/main/cosmos/azure-spring-boot-sample-cosmos-multi-database-multi-account
-[sample-for-multi-database-single-account]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/main/cosmos/azure-spring-boot-sample-cosmos-multi-database-single-account
+[sample-for-multi-database]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/tag_azure-spring-boot_3.6.0/cosmos/azure-spring-boot-sample-cosmos-multi-database-multi-account
+[sample-for-multi-database-single-account]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/tag_azure-spring-boot_3.6.0/cosmos/azure-spring-boot-sample-cosmos-multi-database-single-account
 [sql_api_query]: https://docs.microsoft.com/azure/cosmos-db/sql-api-sql-query
 [local_emulator]: https://docs.microsoft.com/azure/cosmos-db/local-emulator
 [local_emulator_export_ssl_certificates]: https://docs.microsoft.com/azure/cosmos-db/local-emulator-export-ssl-certificates

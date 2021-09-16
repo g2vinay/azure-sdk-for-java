@@ -10,7 +10,7 @@ import static org.springframework.test.context.support.TestPropertySourceUtils.a
 
 public class PropertySettingUtil {
     public static final String URI = "https://test.documents.azure.com:443/";
-    public static final String KEY = "FakeKeyOneACVKpWxxzjURgMZHEgnt5QB0R9Qj0CbHTQYBZQbrRpDoQGPfmZFelasi6bQnPOMpYQ4JdhlVZtfg==";
+    public static final String KEY = "FakeKey";
     public static final String DATABASE_NAME = "test";
     public static final boolean POPULATE_QUERY_METRICS = true;
     public static final ConsistencyLevel CONSISTENCY_LEVEL = ConsistencyLevel.STRONG;
@@ -21,6 +21,9 @@ public class PropertySettingUtil {
     public static final String PROPERTY_CONSISTENCY_LEVEL = "azure.cosmos.consistency-level";
     public static final String PROPERTY_POPULATE_QUERY_METRICS = "azure.cosmos.populateQueryMetrics";
     public static final String PROPERTY_CONNECTION_MODE = "azure.cosmos.connection-mode";
+    public static final String TEST_URI_HTTPS = "https://test.https.documents.azure.com:443/";
+    public static final String TEST_URI_HTTP = "http://test.http.documents.azure.com:443/";
+    public static final String TEST_URI_FAIL = "http://test.fail.documentsfail.azure.com:443/";
 
     public static void configureCosmosProperties(AnnotationConfigApplicationContext context) {
         addInlinedPropertiesToEnvironment(

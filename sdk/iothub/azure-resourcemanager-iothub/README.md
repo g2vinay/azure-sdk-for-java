@@ -2,7 +2,7 @@
 
 Azure Resource Manager IotHub client library for Java.
 
-This package contains Microsoft Azure SDK for IotHub Management SDK. Use this API to manage the IoT hubs in your Azure subscription. Package tag package-2021-03. For documentation on how to use this package, please see [Azure Management Libraries for Java](https://aka.ms/azsdk/java/mgmt).
+This package contains Microsoft Azure SDK for IotHub Management SDK. Use this API to manage the IoT hubs in your Azure subscription. Package tag package-2021-07. For documentation on how to use this package, please see [Azure Management Libraries for Java](https://aka.ms/azsdk/java/mgmt).
 
 ## We'd love to hear your feedback
 
@@ -32,7 +32,7 @@ Various documentation is available to help you get started
 <dependency>
     <groupId>com.azure.resourcemanager</groupId>
     <artifactId>azure-resourcemanager-iothub</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 [//]: # ({x-version-update-end})
@@ -73,6 +73,9 @@ See [Authentication][authenticate] for more options.
 See [API design][design] for general introduction on design and key concepts on Azure Management Libraries.
 
 ## Examples
+
+[Code snippets and samples](https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/iothub/azure-resourcemanager-iothub/SAMPLE.md)
+
 
 ## Troubleshooting
 

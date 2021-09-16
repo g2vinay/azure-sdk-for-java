@@ -18,9 +18,14 @@
     },
     "testApplicationOid": {
       "type": "string",
-      "defaultValue": "b3653439-8136-4cd5-aac3-2a9460871ca6",
       "metadata": {
         "description": "The client OID to grant access to test resources."
+      }
+    },
+    "provisionerApplicationOid": {
+      "type": "string",
+      "metadata": {
+        "description": "The provisioner OID to grant access to test resources."
       }
     },
     "location": {
@@ -120,6 +125,13 @@
     "utcValue": {
       "type": "string",
       "defaultValue": "[utcNow()]"
+    },
+    "attestationUrl": {
+      "type": "string",
+      "defaultValue": "https://skrattestation.azurewebsites.net/",
+      "metadata": {
+        "description": "Test attestation service for Secure Key Release"
+      }
     }
   },
   "variables": {
@@ -291,6 +303,7 @@
         "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
         "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
         "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 7,
         "networkAcls": "[variables('networkAcls')]"
       }
     },
@@ -306,11 +319,10 @@
       },
       "properties": {
         "tenantId": "[parameters('tenantId')]",
-        "initialAdminObjectIds": [
-          "[parameters('testApplicationOid')]"
-        ],
+        "initialAdminObjectIds": "[union(array(parameters('testApplicationOid')), array(parameters('provisionerApplicationOid')))]",
         "enablePurgeProtection": false,
         "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 7,
         "publicNetworkAccess": "Enabled",
         "networkAcls": {
           "bypass": "None",
@@ -482,6 +494,10 @@
     "BLOB_CONTAINER_NAME" : {
       "type": "string",
       "value": "[variables('blobContainerName')]"
+    },
+    "AZURE_KEYVAULT_ATTESTATION_URL": {
+      "type": "string",
+      "value": "[parameters('attestationUrl')]"
     }
   }
 }

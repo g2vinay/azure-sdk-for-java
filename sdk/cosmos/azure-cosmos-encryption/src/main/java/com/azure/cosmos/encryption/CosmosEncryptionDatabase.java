@@ -105,7 +105,7 @@ public class CosmosEncryptionDatabase {
      * @param containerId original container id
      * @return container with encryption capabilities
      */
-    public CosmosEncryptionContainer getCosmosEncryptionAsyncContainer(String containerId) {
+    public CosmosEncryptionContainer getCosmosEncryptionContainer(String containerId) {
         CosmosEncryptionAsyncContainer cosmosEncryptionAsyncContainer =
             this.cosmosEncryptionAsyncDatabase.getCosmosEncryptionAsyncContainer(containerId);
         CosmosContainer cosmosContainer = this.cosmosDatabase.getContainer(containerId);
@@ -122,9 +122,8 @@ public class CosmosEncryptionDatabase {
         try {
             return cosmosClientEncryptionKeyResponseMono.block();
         } catch (Exception ex) {
-            final Throwable throwable = Exceptions.unwrap(ex);
-            if (throwable instanceof CosmosException) {
-                throw (CosmosException) throwable;
+            if (ex instanceof CosmosException) {
+                throw (CosmosException) ex;
             } else {
                 throw ex;
             }

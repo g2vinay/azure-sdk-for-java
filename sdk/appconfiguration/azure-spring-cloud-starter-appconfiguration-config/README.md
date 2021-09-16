@@ -1,4 +1,4 @@
-# Azure Spring cloud starter App Configuration client library for Java
+# Spring Cloud for Azure starter App Configuration client library for Java
 
 This package helps Spring Application to load properties from Azure Configuration Store.
 
@@ -21,7 +21,7 @@ There are two libraries that can be used azure-spring-cloud-appconfiguration-con
 <dependency>
     <groupId>com.azure.spring</groupId>
     <artifactId>azure-spring-cloud-appconfiguration-config</artifactId>
-    <version>2.0.0-beta.2</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 [//]: # ({x-version-update-end})
@@ -33,7 +33,7 @@ or
 <dependency>
     <groupId>com.azure.spring</groupId>
     <artifactId>azure-spring-cloud-appconfiguration-config-web</artifactId>
-    <version>2.0.0-beta.2</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 [//]: # ({x-version-update-end})
@@ -60,7 +60,7 @@ Name | Description | Required | Default
 spring.cloud.azure.appconfiguration.stores[0].enabled | Whether the store will be loaded. | No | true
 spring.cloud.azure.appconfiguration.stores[0].fail-fast | Whether to throw a `RuntimeException` or not when failing to read from App Configuration during application start-up. If an exception does occur during startup when set to false the store is skipped. | No |  true
 spring.cloud.azure.appconfiguration.stores[0].selects[0].key-filter | The key pattern used to indicate which configuration(s) will be loaded.  | No | /application/*
-spring.cloud.azure.appconfiguration.stores[0].selects[0].label-filter | The label used to indicate which configuration(s) will be loaded. | No | `{spring.profiles.active}` or if null `\0`
+spring.cloud.azure.appconfiguration.stores[0].selects[0].label-filter | The label used to indicate which configuration(s) will be loaded. | No | `${spring.profiles.active}` or if null `\0`
 
 Configuration Store Authentication
 
@@ -75,7 +75,7 @@ spring.cloud.azure.appconfiguration.stores[0].managed-identity.client-id | Clien
 Name | Description | Required | Default
 ---|---|---|---
 spring.cloud.azure.appconfiguration.stores[0].monitoring.enabled | Whether the configurations and feature flags will be re-loaded if a change is detected.  | No | false
-spring.cloud.azure.appconfiguration.stores[0].monitoring.watch-interval | Amount of time, of type Duration, configurations are stored before a check can occur. | No | 30s
+spring.cloud.azure.appconfiguration.stores[0].monitoring.refresh-interval | Amount of time, of type Duration, configurations are stored before a check can occur. | No | 30s
 spring.cloud.azure.appconfiguration.stores[0].monitoring.feature-flags.watch-interval | Amount of time, of type Duration, feature flags are stored before a check can occur. | No | 30s
 spring.cloud.azure.appconfiguration.stores[0].monitoring.triggers[0].key | A key that is watched for change via etag. If a change is detected on the key then a refresh of all configurations will be triggered. | Yes (If monitoring enabled) | null
 spring.cloud.azure.appconfiguration.stores[0].monitoring.triggers[0].label | The label of the key that is being watched for etag changes. | No | \0
@@ -123,6 +123,28 @@ Spring Profiles are supported by automatically by being set as App Configuration
 
 ```properties
 spring.cloud.azure.appconfiguration.stores[0].selects[0].label-filter=${spring.profiles.active},v1
+```
+
+If you need to use `(No Label)` you need to do the following:
+
+```properties
+spring.cloud.azure.appconfiguration.stores[0].selects[0].label-filter=,${spring.profiles.active}
+```
+
+where the empty value before the comma equals the `\0` value.
+
+and for yaml
+
+```yaml
+spring:
+  cloud:
+    azure:
+      appconfiguration:
+        stores:
+         -
+           selects:
+             -
+              label-filter: ',${spring.profiles.active}'
 ```
 
 #### Configuration Refresh
@@ -319,9 +341,9 @@ Please follow [instructions here][contributing_md] to build from source or contr
 
 <!-- Link -->
 [package]: https://mvnrepository.com/artifact/com.microsoft.azure/spring-cloud-azure-appconfiguration-config
-[app_configuration_sample]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/main/appconfiguration/azure-appconfiguration-sample
-[app_configuration_conversation_complete_sample]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/main/appconfiguration/azure-appconfiguration-conversion-sample-complete
-[app_configuration_conversation_initail_sample]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/main/appconfiguration/azure-appconfiguration-conversion-sample-initial
+[app_configuration_sample]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/tag_azure-spring-boot_3.6.0/appconfiguration/azure-appconfiguration-sample
+[app_configuration_conversation_complete_sample]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/tag_azure-spring-boot_3.6.0/appconfiguration/azure-appconfiguration-conversion-sample-complete
+[app_configuration_conversation_initail_sample]: https://github.com/Azure-Samples/azure-spring-boot-samples/tree/tag_azure-spring-boot_3.6.0/appconfiguration/azure-appconfiguration-conversion-sample-initial
 [logging]: https://github.com/Azure/azure-sdk-for-java/wiki/Logging-with-Azure-SDK#use-logback-logging-framework-in-a-spring-boot-application
 [azure_subscription]: https://azure.microsoft.com/free
 [logging_doc]: https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#boot-features-logging

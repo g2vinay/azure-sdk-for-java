@@ -113,7 +113,7 @@ jobs:
         condition: and(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['JavaTestVersion'], '1.11'), eq('${{ parameters.SDKType }}', 'client'))
         inputs:
           mavenPomFile: sdk/${{ parameters.ServiceDirectory }}/pom.xml
-          options: -Pcoverage
+          options: '$(DefaultOptions) -Pcoverage'
           mavenOptions: '$(MemoryOptions) $(LoggingOptions)'
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: $(JavaTestVersion)
@@ -162,6 +162,8 @@ jobs:
         condition: and(succeeded(), and(eq(variables['TestFromSource'],'true'), eq(variables['ShouldRunSourceTests'],'true')))
 
       - template: ../steps/upload-repository-on-failure.yml
+
+      - template: ../steps/retain-heap-dump-hprofs.yml
 
       - task: PublishTestResults@2
         condition: and(always(), or(ne(variables['TestFromSource'],'true'), eq(variables['ShouldRunSourceTests'],'true')))
