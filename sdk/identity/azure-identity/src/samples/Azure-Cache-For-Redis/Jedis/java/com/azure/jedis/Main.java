@@ -8,6 +8,8 @@ import com.azure.core.credential.TokenCredential;
 import com.azure.core.credential.TokenRequestContext;
 import com.azure.identity.ClientCertificateCredential;
 import com.azure.identity.ClientCertificateCredentialBuilder;
+import com.azure.identity.ClientSecretCredential;
+import com.azure.identity.ClientSecretCredentialBuilder;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisException;
@@ -15,34 +17,20 @@ import redis.clients.jedis.exceptions.JedisException;
 public class Main {
     public static void main(String[] args) {
 
-        ClientCertificateCredential clientCertificateCredential = new ClientCertificateCredentialBuilder()
-            .clientId("<clientId>")
-            .pfxCertificate("<Cert-File-Path>", "<Cert-Password-if-Applicable>")
-            .tenantId("<tenantId>")
+        ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
+            .clientSecret("xoA8Q~Q_lqQoDtDZMzli.W04if8pmOkQKw11RaAd")
+            .clientId("27d85698-74dd-4dd9-9f2d-8ae0e0e0ac4f")
+            .tenantId("72f988bf-86f1-41af-91ab-2d7cd011db47")
             .build();
 
         Jedis jedisClient = new AzureJedisClientBuilder()
-            .cacheHostName("<cache host name>")
+            .cacheHostName("vigera-aad-rcache-v6.redis.cache.windows.net")
             .port(6380)
-            .username("<username>")
-            .credential(clientCertificateCredential)
+            .username("vservPrinc")
+            .credential(clientSecretCredential)
             .build();
 
         jedisClient.set("Az:key", "sample");
         jedisClient.close();
-    }
-
-
-    // Helper Code
-    private static Jedis createJedisClient(String cacheHostname, int port, String username, AccessToken accessToken, boolean useSsl) {
-        return new Jedis(cacheHostname, port, DefaultJedisClientConfig.builder()
-            .password(accessToken.getToken())
-            .user(username)
-            .ssl(useSsl)
-            .build());
-    }
-
-    private static AccessToken getAccessToken(TokenCredential tokenCredential, TokenRequestContext trc) {
-        return tokenCredential.getToken(trc).block();
     }
 }

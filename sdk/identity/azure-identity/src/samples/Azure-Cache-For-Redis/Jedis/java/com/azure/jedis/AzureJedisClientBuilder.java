@@ -8,6 +8,9 @@ import com.azure.core.http.policy.RetryOptions;
 import com.azure.core.util.logging.ClientLogger;
 import redis.clients.jedis.Jedis;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocketFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +92,6 @@ public class AzureJedisClientBuilder {
         this.password = password;
         return this;
     }
-
 
     /**
      * Configure the retry options.
