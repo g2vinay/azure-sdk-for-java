@@ -3,17 +3,16 @@
 
 package com.azure.storage.common.policy;
 
-import com.azure.core.http.HttpHeader;
-import com.azure.core.http.HttpHeaders;
-import com.azure.core.http.HttpPipelineCallContext;
-import com.azure.core.http.HttpPipelineNextPolicy;
-import com.azure.core.http.HttpResponse;
+import com.azure.core.http.*;
 import com.azure.core.http.policy.HttpPipelinePolicy;
+import com.azure.core.http.policy.HttpPipelineSyncPolicy;
 import com.azure.core.util.CoreUtils;
 import com.azure.core.util.FluxUtil;
 import com.azure.core.util.logging.ClientLogger;
 import com.azure.storage.common.implementation.Constants;
 import reactor.core.publisher.Mono;
+
+import java.util.Locale;
 
 /**
  * This is a request policy in an {@link com.azure.core.http.HttpPipeline} to validate that metadata does not contain
@@ -27,6 +26,27 @@ public class MetadataValidationPolicy implements HttpPipelinePolicy {
     private static final String X_MS_META = Constants.HeaderConstants.X_MS_META + "-";
     private static final int X_MS_META_LENGTH = X_MS_META.length();
 
+    private static final HttpPipelineSyncPolicy INNER = new HttpPipelineSyncPolicy() {
+        @Override
+        protected void beforeSendingRequest(HttpPipelineCallContext context) {
+            context.getHttpRequest().getHeaders().stream()
+                .filter(header -> header.getName().toLowerCase(Locale.ROOT)
+                    .startsWith(Constants.HeaderConstants.X_MS_META))
+                .forEach(header -> {
+                    String name = header.getName();
+                    String value = header.getValue();
+                    boolean foundWhitespace = Character.isWhitespace(name.charAt(X_MS_META_LENGTH))
+                        || Character.isWhitespace(name.charAt(name.length() - 1))
+                        || Character.isWhitespace(value.charAt(0))
+                        || Character.isWhitespace(value.charAt(value.length() - 1));
+                    if (foundWhitespace) {
+                        throw LOGGER.logExceptionAsError(new IllegalArgumentException("Metadata keys and values "
+                            + "can not contain leading or trailing whitespace. Please remove or encode them."));
+                    }
+                });
+        }
+    };
+
     @Override
     public Mono<HttpResponse> process(HttpPipelineCallContext context, HttpPipelineNextPolicy next) {
         try {
@@ -34,8 +54,12 @@ public class MetadataValidationPolicy implements HttpPipelinePolicy {
         } catch (IllegalArgumentException ex) {
             return FluxUtil.monoError(LOGGER, ex);
         }
+        return INNER.process(context, next);
+    }
 
-        return next.process();
+    @Override
+    public HttpResponse processSync(HttpPipelineCallContext context, HttpPipelineNextSyncPolicy next) {
+        return INNER.processSync(context, next);
     }
 
     static void validateMetadataHeaders(HttpHeaders headers) {

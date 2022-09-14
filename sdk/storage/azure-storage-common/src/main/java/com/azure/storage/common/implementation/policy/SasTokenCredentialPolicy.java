@@ -5,8 +5,10 @@ package com.azure.storage.common.implementation.policy;
 
 import com.azure.core.http.HttpPipelineCallContext;
 import com.azure.core.http.HttpPipelineNextPolicy;
+import com.azure.core.http.HttpPipelineNextSyncPolicy;
 import com.azure.core.http.HttpResponse;
 import com.azure.core.http.policy.HttpPipelinePolicy;
+import com.azure.core.http.policy.HttpPipelineSyncPolicy;
 import com.azure.core.util.CoreUtils;
 import com.azure.core.util.logging.ClientLogger;
 import com.azure.storage.common.implementation.credentials.SasTokenCredential;
@@ -34,18 +36,28 @@ public final class SasTokenCredentialPolicy implements HttpPipelinePolicy {
         this.credential = credential;
     }
 
+    private final HttpPipelineSyncPolicy inner = new HttpPipelineSyncPolicy() {
+        @Override
+        protected void beforeSendingRequest(HttpPipelineCallContext context) {
+            try {
+                URL requestURL = context.getHttpRequest().getUrl();
+                String delimiter = !CoreUtils.isNullOrEmpty(requestURL.getQuery()) ? "&" : "?";
+
+                String newURL = requestURL + delimiter + credential.getSasToken();
+                context.getHttpRequest().setUrl(new URL(newURL));
+            } catch (MalformedURLException ex) {
+                throw LOGGER.logExceptionAsError(new IllegalStateException(ex));
+            }
+        }
+    };
+
     @Override
     public Mono<HttpResponse> process(HttpPipelineCallContext context, HttpPipelineNextPolicy next) {
-        try {
-            URL requestURL = context.getHttpRequest().getUrl();
-            String delimiter = !CoreUtils.isNullOrEmpty(requestURL.getQuery()) ? "&" : "?";
+        return inner.process(context, next);
+    }
 
-            String newURL = requestURL + delimiter + credential.getSasToken();
-            context.getHttpRequest().setUrl(new URL(newURL));
-        } catch (MalformedURLException ex) {
-            throw LOGGER.logExceptionAsError(new IllegalStateException(ex));
-        }
-
-        return next.process();
+    @Override
+    public HttpResponse processSync(HttpPipelineCallContext context, HttpPipelineNextSyncPolicy next) {
+        return inner.processSync(context, next);
     }
 }
